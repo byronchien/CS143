@@ -11,7 +11,17 @@
 </p>
 
 <p>
-<?php echo $_POST["calc_input"]; ?>
+<?php
+	if ($_POST["calc_input"] != NULL)
+	{
+		$calc_input = $_POST["calc_input"];
+		$matches = [];
+		preg_match("/([0-9]+[+-\/*])+([0-9]+)/",$calc_input, $matches);
+		var_dump($matches);
+		echo preg_last_error();
+	}
+
+ ?>
 </p>
 </form>
 </body>
