@@ -12,10 +12,25 @@
 
 <p>
 <?php
+
 	if ($_POST["calc_input"] != NULL)
 	{
 		$calc_input = $_POST["calc_input"];
 		$matches = [];
+
+		// checks for any characters not allowed
+		$check = preg_match("/[^0-9+\-\/*.\ ]+/", $calc_input, $matches);
+		$check += preg_match("/[^1-9]
+		
+		$check += preg_match("/[0-9]+\ [0-9]+/", $calc_input, $matches);
+
+
+		if($check)
+		{
+			echo "Invalid Expression!";
+			return;
+		}
+
 /* code for checking for valid expressions?
  /		preg_match("/([0-9]+[+-\/*])+([0-9]+)/",$calc_input, $matches);
  /		var_dump($matches);
