@@ -12,42 +12,21 @@
 
 <p>
 <?php
-<<<<<<< HEAD
 
-	if ($_POST["calc_input"] != NULL)
-=======
 	if ($_GET["calc_input"] != NULL)
->>>>>>> f24c4087bc5c9af223b4e2dd373c7736da4b831d
 	{
 		$calc_input = $_GET["calc_input"];
 		$matches = [];
-<<<<<<< HEAD
 
-		// checks for any characters not allowed
-		$check = preg_match("/[^0-9+\-\/*.\ ]+/", $calc_input, $matches);
-		$check += preg_match("/[^1-9]
-		
-		$check += preg_match("/[0-9]+\ [0-9]+/", $calc_input, $matches);
-
-
-		if($check)
-=======
-// code for checking for valid expressions?
-		// check for alpha characters
+		// checking characters that shouldn't be in the expression
 		if (preg_match('/[^0-9+\-\/*.\ ]/', $calc_input, $matches)) 
->>>>>>> f24c4087bc5c9af223b4e2dd373c7736da4b831d
 		{
 			echo "Invalid Expression!";
 			return;
 		}
 
-<<<<<<< HEAD
-/* code for checking for valid expressions?
- /		preg_match("/([0-9]+[+-\/*])+([0-9]+)/",$calc_input, $matches);
- /		var_dump($matches);
- /		echo preg_last_error();
- */
-=======
+		$matches = [];
+
 		// check for when a negative number has a space between 
 		// its minus sign and the digits
 		if (preg_match('/[+\-\/*]\s*-\s/', $calc_input, $matches)) 
@@ -60,14 +39,16 @@
 		$calc_input = preg_replace('/-\s*-/', '- -', $calc_input);
 		echo $calc_input . "<br>";
 
- 		//var_dump($matches);
- 		//echo preg_last_error();
- 		
- 
->>>>>>> f24c4087bc5c9af223b4e2dd373c7736da4b831d
+		// check for a divide by zero error
+		if (preg_match("/\/[\s\-]*0/", $calc_input, $matches))
+		{
+			echo "Divide by zero error!";
+			return;
+		}
 
-/* code for evaluating valid expression */
+		/* code for evaluating valid expression */
 		$result = eval("return $calc_input;");
+		$result = ($result == false) ? "Invalid expression!" : $result;
 		echo $result;
 	}
 
