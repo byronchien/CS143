@@ -46,7 +46,7 @@
 
 		// check for '--' , replace with '- -' for eval to work
 		$calc_input = preg_replace('/-\s*-/', '- -', $calc_input);
-		echo $calc_input . "<br>";
+		//echo $calc_input . "<br>";
 
 		// check for a divide by zero error
 		if (preg_match("/\/[\s\-]*0/", $calc_input, $matches))
