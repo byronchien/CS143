@@ -17,20 +17,22 @@
 		$calc_input = $_GET["calc_input"];
 		$matches = [];
 // code for checking for valid expressions?
-		/*
-		if (preg_match(".*[A-z]+", $calc_input, $matches) == 1) 
+		// check for alpha characters
+		if (preg_match('/[A-z]/i', $calc_input, $matches)) 
 		{
 			echo "Invalid Expression!";
 			return;
 		}
-		*/
+
+
  		//var_dump($matches);
  		//echo preg_last_error();
+ 		
  
 
 /* code for evaluating valid expression */
 		$result = eval("return $calc_input;");
-		echo $result;
+		//echo $result;
 	}
 
  ?>
