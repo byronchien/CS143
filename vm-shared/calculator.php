@@ -18,7 +18,7 @@
 		$matches = [];
 // code for checking for valid expressions?
 		// check for alpha characters
-		if (preg_match('/[A-z]/i', $calc_input, $matches)) 
+		if (preg_match('/[a-z]/i', $calc_input, $matches)) 
 		{
 			echo "Invalid Expression!";
 			return;
