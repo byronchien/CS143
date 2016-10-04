@@ -35,6 +35,15 @@
 			return;
 		}		
 
+		$matches = [];
+
+		// check for leading zeros
+		if (preg_match('/0+[0-9]/', $calc_input, $matches)) 
+		{
+			echo "Invalid Expression!";
+			return;
+		}				
+
 		// check for '--' , replace with '- -' for eval to work
 		$calc_input = preg_replace('/-\s*-/', '- -', $calc_input);
 		echo $calc_input . "<br>";
@@ -42,7 +51,7 @@
 		// check for a divide by zero error
 		if (preg_match("/\/[\s\-]*0/", $calc_input, $matches))
 		{
-			echo "Divide by zero error!";
+			echo "Division by zero error!";
 			return;
 		}
 
