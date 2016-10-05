@@ -16,42 +16,52 @@
 	if ($_GET["calc_input"] != NULL)
 	{
 		$calc_input = $_GET["calc_input"];
-		$matches = [];
 
 		// checking characters that shouldn't be in the expression
-		if (preg_match('/[^0-9+\-\/*.\ ]/', $calc_input, $matches)) 
+		if (preg_match('/[^0-9+\-\/*.\s]/', $calc_input)) 
 		{
 			echo "Invalid Expression!";
 			return;
 		}
 
-		$matches = [];
-
 		// check for when a negative number has a space between 
 		// its minus sign and the digits
-		if (preg_match('/[+\-\/*]\s*-\s/', $calc_input, $matches)) 
+		if (preg_match('/[+\-\/*]\s*-\s/', $calc_input)) 
 		{
 			echo "Invalid Expression!";
 			return;
 		}		
 
-		$matches = [];
-
 		// check for leading zeros
-		if (preg_match('/0+[0-9]/', $calc_input, $matches)) 
+		if (preg_match('/0+[0-9]/', $calc_input)) 
 		{
 			echo "Invalid Expression!";
 			return;
-		}				
+		}			
+
+		// check for leading operator
+		if (preg_match('/^\s*[+\/\*\.]/', $calc_input))
+		{
+			echo "Invalid Expression!";
+			return;
+		}	
 
 		// check for '--' , replace with '- -' for eval to work
 		$calc_input = preg_replace('/-\s*-/', '- -', $calc_input);
 		//echo $calc_input . "<br>";
 
 		// check for a divide by zero error
-		if (preg_match("/\/[\s\-]*0/", $calc_input, $matches))
+		if (preg_match('/\/[\s\-]*0/', $calc_input))
 		{
 			echo "Division by zero error!";
+			return;
+		}
+
+		// check for -0 or spaces before or after just 0
+		// check for just 0
+		if (preg_match('/^[\s]*[\-]?0[\s]*$/', $calc_input))
+		{
+			echo ($calc_input === "0") ? "" : 0;
 			return;
 		}
 
