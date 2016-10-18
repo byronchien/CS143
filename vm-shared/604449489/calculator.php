@@ -65,13 +65,6 @@
 			return;
 		}
 
-		// check for spaces in the middle of a number
-		if (preg_match('/[0-9\.]\s+[0-9\.]/', $calc_input))
-		{
-			echo "Invalid expression!";
-			return;
-		}
-
 		// check for a divide by zero error
 		// looks for /0 with or without a decimal after the zero and zeroes
 		if (preg_match('/\/[\s-]*0\.?0*\s*\Z/', $calc_input))
