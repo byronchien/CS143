@@ -14,6 +14,22 @@
 	{
 		echo $_GET["query"];
 	}
+
+
+	try {
+		$db = new PDO('mysql:dbname=TEST;host=127.0.0.1', 'cs143', '');
+	} catch (PDOException $e) {
+		echo 'Connection failed: ' . $e->getMessage();
+		return;
+	}
+
+	$query = "select * from Movie";
+	$test = $db->prepare($query);
+	$test->execute();
+
+	$results = $test->fetchAll();
+	var_dump($results);
+
 ?>
 
 
