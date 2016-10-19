@@ -35,7 +35,7 @@ CREATE TABLE MovieGenre(
 	mid INT,
 	genre VARCHAR(20),
 	FOREIGN KEY	(mid) REFERENCES Movie(id),
-	CHECK (genre IS NOT NULL AND genre <> ''),
+	CHECK (genre IS NOT NULL AND genre <> '')
 	);
 
 CREATE TABLE MovieDirector(
