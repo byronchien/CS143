@@ -23,13 +23,39 @@
 		return;
 	}
 
-	$query = "select * from Movie";
+	//$query = "select * from Movie";
+	$query = $_GET["query"];
+
 	$test = $db->prepare($query);
-	$test->execute();
+	$test2 = $test->execute();
 
-	$results = $test->fetchAll();
-	var_dump($results);
+	$columnNames = [];
+	$results = $test->fetchAll(PDO::FETCH_ASSOC);
 
+	$resultsTable = "<table><tr>";
+
+	// retrieve column names
+	foreach($results[0] as $key => $value)
+	{
+		$columnNames[] = $key;
+		$resultsTable .= "<th>".$key."</th>";
+	}
+	$resultsTable .= "</tr>";
+
+	foreach($results as $row)
+	{
+		$resultsTable .= "<tr>";
+		foreach($row as $value)
+		{
+			$resultsTable .= "<td>".$value."</td>";
+		}
+		$resultsTable .= "</tr>";
+	}
+
+	$resultsTable .= "</table>";
+
+	echo $resultsTable;
+	//var_dump($columnNames);
 ?>
 
 
