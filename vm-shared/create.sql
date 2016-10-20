@@ -41,7 +41,7 @@ CREATE TABLE MovieGenre(
 CREATE TABLE MovieDirector(
 	mid INT,
 	did INT,
-	PRIMARY KEY (did),
+	FOREIGN KEY (did) REFERENCES Director(id),
 	FOREIGN KEY	(mid) REFERENCES Movie(id));
 
 CREATE TABLE MovieActor(
@@ -59,3 +59,20 @@ CREATE TABLE Review(
 	rating INT,
 	comment VARCHAR(500),
 	FOREIGN KEY (mid) REFERENCES Movie(id));
+
+CREATE TABLE MaxPersonID(
+	id INT,
+	CHECK (id > '0' AND id IS NOT NULL));
+
+CREATE TABLE MaxMovieID(
+	id INT,
+	CHECK (id > '0' AND id IS NOT NULL));
+
+CREATE TRIGGER personID
+	BEFORE INSERT ON Actor
+	FOR EACH ROW
+	BEGIN
+		SET NEW.last = 'test';
+	END;
+
+
