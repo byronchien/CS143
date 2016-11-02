@@ -23,7 +23,7 @@
 		return;
 	}
 
-	//$query = "select * from Director";
+	//$query = "select * from Movie";
 	$query = $_GET["query"];
 
 	$test = $db->prepare($query);
