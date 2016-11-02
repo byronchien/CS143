@@ -61,10 +61,7 @@
 	} catch (PDOException $e) {
 		echo 'Connection failed: ' . $e->getMessage();
 		return;
-	}
-
-	// need to get id
-	$id = 1;
+	}	
 	
 	$valid_input = true;
 	if ($_GET["first"] == NULL || $_GET["first"] == '') {
@@ -86,6 +83,30 @@
 		return;
 	}
 	
+
+	//SELECT * FROM Actor WHERE id=( SELECT max(id) FROM Actor)
+	
+	// Update MaxPersonID
+	$query = "update MaxPersonID set id=id+1";
+	$rs = $db->query($query);
+	if (!$rs) {
+	    echo "\nPDO::errorInfo():\n";
+	    print_r($db->errorInfo());
+		exit(1);
+	}
+	
+
+	// Select ID from MaxPersonID
+	$query = "select id from MaxPersonID";
+	$rs = $db->query($query);
+	if (!$rs) {
+	    echo "\nPDO::errorInfo():\n";
+	    print_r($db->errorInfo());
+		exit(1);
+	}
+	$result = $rs->fetch(PDO::FETCH_ASSOC);
+	$id = $result['id'];
+
 	// Actor or Director
 	$query = ($_GET["identity"] == 'Actor') ?
 		"insert into Actor values (?, ?, ?, ?, ?, ?)" :
@@ -99,7 +120,23 @@
 
 	$statement = $db->prepare($query);
 	$rs = $statement->execute($vars);
-	$statement->free_result();
+	if (!$rs) {
+		echo "test";
+		// Update MaxPersonID
+		$query = "update MaxPersonID set (id = id - 1)";
+		$rs = $db->query($query);
+		if (!$rs) {
+		    echo "\nPDO::errorInfo():\n";
+		    print_r($db->errorInfo());
+			exit(1);
+		}
+
+	    echo "\nPDO::errorInfo():\n";
+	    print_r($db->errorInfo());
+		exit(1);
+	}
+
+	$db->close();
 ?>
 
 </p>
