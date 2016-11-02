@@ -1,0 +1,28 @@
+body {
+	margin:0;
+}
+
+#nav-bar {
+	padding-top: 25px;
+	width: 250px;
+	height: 100%;
+	width:15%;
+	float:left;
+}
+
+#nav-bar li {
+	list-style:none;
+	margin-bottom:10px;
+}
+
+#container {
+	float: right;
+	width:85%;
+	height:100%;
+}
+
+#main-content {
+	margin:50px auto 0 auto;
+	width:50%;
+	text-align:center;
+}
