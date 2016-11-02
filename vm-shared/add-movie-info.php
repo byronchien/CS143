@@ -60,9 +60,9 @@
 		echo 'Connection failed: ' . $e->getMessage();
 		return;
 	}
-
+	
 	// need to get id
-	$id = 1;
+	$id = 7;
 	
 	$valid_input = true;
 	if ($_GET["title"] == NULL || $_GET["title"] == '') {
@@ -86,19 +86,19 @@
 	if ($valid_input == false) {
 		return;
 	}
-	
 	// insert into Movie
 	$query = "insert into Movie values (?, ?, ?, ?, ?)";
 	$vars = [$id, $_GET["title"], $_GET["year"], $_GET["rating"], 
 		$_GET["company"]];
 	$statement = $db->prepare($query);
-	$test2 = $statement->execute($vars);
+	$rs = $statement->execute($vars);
 
 	// insert into MovieGenre
-	$query = "insert into Movie values (?, ?)";
+	$query = "insert into MovieGenre values (?, ?)";
 	$vars = [$id, $_GET["genre"]];
 	$statement = $db->prepare($query);
-	$test2 = $statement->execute($vars);
+	$rs = $statement->execute($vars);
+	$statement->free_result();
 ?>
 
 </p>

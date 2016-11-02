@@ -98,7 +98,8 @@
 		$_GET["dob"], $_GET["dod"]];
 
 	$statement = $db->prepare($query);
-	$test2 = $statement->execute($vars);
+	$rs = $statement->execute($vars);
+	$statement->free_result();
 ?>
 
 </p>
