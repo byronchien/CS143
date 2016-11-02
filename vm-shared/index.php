@@ -16,6 +16,8 @@
 <!-- will be used to display the content of each page -->
 	<div id="main-content">
 		<form>
+			Actors:<input type="radio" value="actors" name="group" checked>
+			Movies:<input type="radio" value="movies" name="group"><br>
 			Search:<input type="text" placeholder="Search">
 			<input type="button" value="submit">
 		</form>
