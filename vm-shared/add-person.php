@@ -94,7 +94,6 @@
 	    print_r($db->errorInfo());
 		exit(1);
 	}
-	
 
 	// Select ID from MaxPersonID
 	$query = "select id from MaxPersonID";

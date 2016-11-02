@@ -61,9 +61,6 @@
 		return;
 	}
 	
-	// need to get id
-	$id = 7;
-	
 	$valid_input = true;
 	if ($_GET["title"] == NULL || $_GET["title"] == '') {
 		echo "title is empty<br>";
@@ -86,6 +83,29 @@
 	if ($valid_input == false) {
 		return;
 	}
+
+	//SELECT * FROM Movie WHERE id=( SELECT max(id) FROM Movie)
+
+	// Update MaxMovieID
+	$query = "update MaxMovieID set id=id+1";
+	$rs = $db->query($query);
+	if (!$rs) {
+	    echo "\nPDO::errorInfo():\n";
+	    print_r($db->errorInfo());
+		exit(1);
+	}
+
+	// Select ID from MaxPersonID
+	$query = "select id from MaxMovieID";
+	$rs = $db->query($query);
+	if (!$rs) {
+	    echo "\nPDO::errorInfo():\n";
+	    print_r($db->errorInfo());
+		exit(1);
+	}
+	$result = $rs->fetch(PDO::FETCH_ASSOC);
+	$id = $result['id'];
+
 	// insert into Movie
 	$query = "insert into Movie values (?, ?, ?, ?, ?)";
 	$vars = [$id, $_GET["title"], $_GET["year"], $_GET["rating"], 
@@ -98,6 +118,7 @@
 	$vars = [$id, $_GET["genre"]];
 	$statement = $db->prepare($query);
 	$rs = $statement->execute($vars);
+
 	$statement->free_result();
 ?>
 
