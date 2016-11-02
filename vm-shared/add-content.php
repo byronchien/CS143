@@ -64,8 +64,8 @@
 	}
 
 	// need to get id
-	$id = 1;
-
+	$id = 8;
+	
 	$valid_input = true;
 	if ($_GET["first"] == NULL || $_GET["first"] == '') {
 		echo "last name is empty<br>";
@@ -79,28 +79,13 @@
 		echo "date of birth is empty<br>";
 		$valid_input = false;
 	}
-
+	if ($_GET["dod"] == '') {
+		$_GET["dod"] = NULL;
+	}
 	if ($valid_input == false) {
 		return;
 	}
-
 	
-
-	/*
-	$query = ($_GET["identity"] == 'Actor') ? 
-		"insert into Actor values (:id, :last, :first, :sex, :dob, :dod)" :
-		"insert into Director values (:id, :last, :first, :dob, :dod)";
-		*/
-/*
-	$vars = ($_GET["identity"] == 'Actor') ? 
-		['id' => $id, 'last' => $_GET["last"], 
-		'first' => $_GET["first"], 'sex' => $_GET["sex"], 
-		'dob' => $_GET["dob"], ':dod' => $_GET["dod"]] :
-		['id' => $id, 'last' => $_GET["last"], 
-		'first' => $_GET["first"], 
-		'dob' => $_GET["dob"], 'dod' => $_GET["dod"]];
-	*/
-
 	// Actor or Director
 	$query = ($_GET["identity"] == 'Actor') ?
 		"insert into Actor values (?, ?, ?, ?, ?, ?)" :
