@@ -1,7 +1,7 @@
 <html>
 <head>
 	<link rel="stylesheet" href="./style.css" type="text/css">
-	<h1> Add Movie Information </h1>
+	<h1> Add Actor to Movie Relation </h1>
 </head>
 <body>
 
@@ -15,7 +15,7 @@
 	</ul>
 </div>	
 
-<!-- will be used to get input to add comments to Review table -->
+<!-- will be used to get input to add to MovieActor table -->
 <form method="GET">
     <div class="form-group">
       <label for="role">Role</label>
@@ -23,7 +23,7 @@
       			name="role"/>
     </div>
 
-<!-- will be used to add comments to Review table -->
+<!-- will be used to add to MovieActor table -->
 <p>
 <?php
 	try {

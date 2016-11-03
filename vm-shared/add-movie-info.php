@@ -1,7 +1,7 @@
 <html>
 <head>
 	<link rel="stylesheet" href="./style.css" type="text/css">
-	<h1> Add Director to Movie </h1>
+	<h1> Add Movie Information </h1>
 </head>
 <body>
 

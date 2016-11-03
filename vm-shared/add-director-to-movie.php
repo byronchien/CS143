@@ -1,7 +1,7 @@
 <html>
 <head>
 	<link rel="stylesheet" href="./style.css" type="text/css">
-	<h1> Add Actor to Movie </h1>
+	<h1> Add Director to Movie Relation </h1>
 </head>
 <body>
 
@@ -15,26 +15,10 @@
 	</ul>
 </div>	
 
-<!-- will be used to get input to add comments to Review table -->
+<!-- will be used to get input to add to MovieDirector table -->
 <form method="GET">
-    <div class="form-group">
-      <label for="name">Reviewer name</label>
-      <input type="text" class="form-control" placeholder="Text input"  
-      			name="name"/>
-    </div>
-    <div class="form-group">
-      <label for="rating">Rating</label>
-      <input type="text" class="form-control" placeholder="Text input" 
-      			name="rating"/>
-    </div>
-    <div class="form-group">
-      <label for="comment">Comment</br></label>
-      <textarea class="form-control" placeholder="Text input" 
-      			name="comment" rows="10" cols="30"></textarea>
-    </div>
 
-
-<!-- will be used to add comments to Review table -->
+<!-- will be used to add to MovieDirector table -->
 <p>
 <?php
 	try {
@@ -44,6 +28,31 @@
 		return;
 	}	
 
+	// Get Director ID
+  	$rs = $db->query("select id, first, last from Director");
+ 	if (!$rs) {
+	    echo "\nPDO::errorInfo():\n";
+	    print_r($db->errorInfo());
+		exit(1);
+	}
+
+    echo "<div class='form-group'>
+    	<label for='did'>Director</br></label>
+    	<select name='did'>";
+
+    while ($row = $rs->fetch(PDO::FETCH_ASSOC)) {
+
+                  unset($id, $first, $last);
+                  $id = $row['id'];
+                  $first = $row['first']; 
+                  $last = $row['last']; 
+                  echo '<option value="'.$id.'">'.$first.' '.$last.'</option>';
+                 
+	}
+
+    echo "</select><br></div>";
+
+	// Get Movie ID
   	$rs = $db->query("select id, title from Movie");
  	if (!$rs) {
 	    echo "\nPDO::errorInfo():\n";
@@ -68,47 +77,12 @@
     echo "<button type='submit' class='btn btn-default'>
     		Add to Database</button></form>";
 
-	$valid_input = true;
-	if ($_GET["name"] == NULL || $_GET["name"] == '') {
-		echo "name is empty<br>";
-		$valid_input = false;
-	}
-	if ($_GET["rating"] == NULL || $_GET["rating"] == '') {
-		echo "rating is empty<br>";
-		$valid_input = false;
-	}
-	else if (!is_numeric($_GET["rating"])) {
-		echo "rating is not numeric<br>";
-		$valid_input = false;
-	}
-	if ($_GET["comment"] == NULL || $_GET["comment"] == '') {
-		echo "comment is empty<br>";
-		$valid_input = false;
-	}
-
-	if ($valid_input == false) {
-		return;
-	}
-	
-	// Get Timestamp
-	$query = "select now()";
-	$rs = $db->query($query);
-	if (!$rs) {
-	    echo "\nPDO::errorInfo():\n";
-	    print_r($db->errorInfo());
-		exit(1);
-	}
-	$result = $rs->fetch(PDO::FETCH_ASSOC);
-	$timestamp = $result['now()'];
-
-	$query = "insert into Review values (?, ?, ?, ?, ?)";
-	$vars = [$_GET["name"], $timestamp, $_GET["mid"], $_GET["rating"], 
-			$_GET["comment"]];
+	$query = "insert into MovieDirector values (?, ?)";
+	$vars = [$_GET["mid"], $_GET["did"]];
 
 	$statement = $db->prepare($query);
 	$rs = $statement->execute($vars);
 	if (!$rs) {
-		echo "hi";
 	    echo "\nPDO::errorInfo():\n";
 	    print_r($db->errorInfo());
 		exit(1);
