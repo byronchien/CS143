@@ -108,7 +108,6 @@
 	$statement = $db->prepare($query);
 	$rs = $statement->execute($vars);
 	if (!$rs) {
-		echo "hi";
 	    echo "\nPDO::errorInfo():\n";
 	    print_r($db->errorInfo());
 		exit(1);
