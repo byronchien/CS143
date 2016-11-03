@@ -20,6 +20,7 @@
 			Search Database</a></li>
 	</ul>
 </div>
+
 <!-- will be used to get input to add new Actor/Director -->
 <form method="GET">
     <div class="form-group">
@@ -51,7 +52,7 @@
     <div class="form-group">
       <label for="genre">Genre</label>
       <input type="text" class="form-control" placeholder="Text input" 
-      			name="genre"><br>
+      			name="genre">(Separate Genres by Commas)<br>
     </div>
     <button type="submit" class="btn btn-default">Add to Database</button>
 </form>
@@ -83,6 +84,8 @@
 		echo "genre is empty<br>";
 		$valid_input = false;
 	}
+	$genre_arr = explode(',', $_GET["genre"]);
+
 	if ($_GET["rating"] == '') {
 		$_GET["rating"] == NULL;
 	}
@@ -129,13 +132,15 @@
 
 	// insert into MovieGenre
 	$query = "insert into MovieGenre values (?, ?)";
-	$vars = [$id, $_GET["genre"]];
-	$statement = $db->prepare($query);
-	$rs = $statement->execute($vars);
-	if (!$rs) {
-	    echo "\nPDO::errorInfo():\n";
-	    print_r($db->errorInfo());
-		exit(1);
+	foreach($genre_arr as $value) {
+		$vars = [$id, $value];
+		$statement = $db->prepare($query);
+		$rs = $statement->execute($vars);
+		if (!$rs) {
+		    echo "\nPDO::errorInfo():\n";
+		    print_r($db->errorInfo());
+			exit(1);
+		}
 	}
 
 	$db->close();
