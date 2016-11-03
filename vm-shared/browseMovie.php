@@ -23,9 +23,8 @@
 			}
 			else
 			{
-				$first = $_GET["first"];
-				$last = $_GET["last"];
-				$dob = $_GET["dob"];
+				
+				$title = $_GET["title"];
 
 				try {
 					$db = new PDO('mysql:dbname=TEST;host=127.0.0.1', 'cs143', '');
@@ -34,49 +33,46 @@
 					return;
 				}
 
-				$ActorInfo = "SELECT * FROM Actor WHERE first='".$first."' AND last='"
-							.$last."' AND dob='".$dob."'";
+				$movieInfo = "SELECT * FROM Movie WHERE title = '".$title."'";
 
-				$query = $db->prepare($ActorInfo);
+
+				$query = $db->prepare($movieInfo);
 				$query->execute();
 				$results = $query->fetch(PDO::FETCH_ASSOC);
 
-				$results["dod"] = ($results["dod"] == null) ?
-					 "Still Alive" : $results["dod"];
+				echo "<h3>Movie Info</h3>";
 
-				echo "<h3>Actor Information</h3>";
-
-				$resultsTable = "<table><tr><th>Name</th><th>Sex</th>".
-					"<th>Date of Birth</th><th>Date of Death</th></tr>";
-				$resultsTable .= "<td>".$results["first"]." ".$results["last"]."</td><td>".$results["sex"];
-				$resultsTable .= "</td><td>".$results["dob"]."</td><td>".$results["dod"];
+				$resultsTable = "<table><tr><th>Title</th><th>Year</th>".
+					"<th>Rating</th><th>Company</th></tr>";
+				$resultsTable .= "<td>".$results["title"]."</td><td>".$results["year"];
+				$resultsTable .= "</td><td>".$results["rating"]."</td><td>".$results["company"];
 				$resultsTable .= "</td></tr></table><br><br><br>";
 
 				echo $resultsTable;
 
-				$ActorMovies = "SELECT role, title FROM MovieActor, Movie WHERE aid = '".
-					$results["id"]."' AND Movie.id=MovieActor.mid";
-
-				$query = $db->prepare($ActorMovies);
+				$Actors = "SELECT role, first, last, dob FROM MovieActor, Actor WHERE mid ='".
+					$results["id"]."' AND MovieActor.aid = Actor.id";
+				$query = $db->prepare($Actors);
 				$query->execute();
 				$results = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				echo "<h3>Movie Information</h3>";
+				echo "<h3>Actors in this Movie</h3>";
 
-				$resultsTable = "<table><tr><th>Role</th><th>Title</th></tr>";
-				foreach($results as $row)
+				$resultsTable = "<table><tr><th>Name</th><th>Role</th></tr>";
+				foreach ($results as $row)
 				{
-					$resultsTable .= "<tr><td>".$row["role"]."</td>";
-					$resultsTable .= "<td><a href='browseMovie.php?".
-						"title=".$row["title"]."'>";
-					$resultsTable .= $row["title"]."</a></td></tr>";
+					$resultsTable .= "<tr><td><a href='browseActor.php?".
+						"first=".$row["first"].
+						"&last=".$row["last"].
+						"&dob=".$row["dob"]."'>";
+
+					$resultsTable .= $row["first"]." ".$row["last"]."</a></td>";
+					$resultsTable .= "<td>".$row["role"]."</td></tr>";
 				}
 
 				$resultsTable .= "</table><br><br><br>";
 
 				echo $resultsTable;
-
-
 			}
 		?>
 

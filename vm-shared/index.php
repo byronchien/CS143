@@ -101,10 +101,8 @@
 			foreach($results as $row)
 			{
 				$resultsTable .= "<tr>";
-				foreach($row as $value)
-				{
-					$resultsTable .= "<td>".$value."</td>";
-				}
+				$resultsTable .="<td><a href='browseMovie.php?title=".$row["title"]."'>";
+				$resultsTable .= $row["title"]."</a><td>".$row["year"]."</td>";
 				$resultsTable .= "</tr>";
 			}
 
