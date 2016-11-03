@@ -7,9 +7,17 @@
 <!-- will be used on every page to navigate between functions -->
 	<ul>
 		<li><a href="add-person.php">
-			Add Content</a></li>
-		<li><a href="add-comment.php">Review Content</a></li>
-		<li><a href="index.php">Search Database</a></li>
+			Add Person</a></li>
+		<li><a href="add-actor-to-movie.php">
+			Add Actor to Movie Relation</a></li>
+		<li><a href="add-director-to-movie.php">
+			Add Director to Movie Relation</a></li>
+		<li><a href="add-movie-info.php">
+			Add Movie Info</a></li>
+		<li><a href="add-comment.php">
+			Review Content</a></li>
+		<li><a href="index.php">
+			Search Database</a></li>
 	</ul>
 </div>
 
@@ -37,13 +45,13 @@
 
 			$keywords = explode(' ', $_GET["search"]);
 
-			$actorSearch = "SELECT first,last,dob FROM Actor WHERE first LIKE '%".$keywords[0].
-				"%' OR last LIKE '%".$keywords[0]."%'";
+			$actorSearch = "SELECT first,last,dob FROM Actor WHERE (first LIKE '%".$keywords[0].
+				"%' OR last LIKE '%".$keywords[0]."%')";
 
 			for ($i = 1; $i < count($keywords); $i++)
 			{
-				$actorSearch .= " OR first LIKE '%".$keywords[$i]."%' OR ";
-				$actorSearch .= "last LIKE '%".$keywords[$i]."%'";
+				$actorSearch .= " AND (first LIKE '%".$keywords[$i]."%' OR ";
+				$actorSearch .= "last LIKE '%".$keywords[$i]."%')";
 			}
 
 			$actorSearch .= " ORDER BY last ASC";
@@ -79,7 +87,7 @@
 
 			for ($i = 1; $i < count($keywords); $i++)
 			{
-				$movieSearch .= " OR title LIKE '%".$keywords[$i]."%'";
+				$movieSearch .= " AND title LIKE '%".$keywords[$i]."%'";
 			}
 
 			$movieSearch .= " ORDER BY title ASC";
