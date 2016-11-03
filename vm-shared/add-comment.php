@@ -32,8 +32,7 @@
       <textarea class="form-control" placeholder="Text input" 
       			name="comment" rows="10" cols="30"></textarea>
     </div>
-    <button type="submit" class="btn btn-default">Add to Database</button>
-</form>
+
 
 <!-- will be used to add comments to Review table -->
 <p>
@@ -44,9 +43,30 @@
 		echo 'Connection failed: ' . $e->getMessage();
 		return;
 	}	
-	
-	// Need movie ID
-	$mid = 2;
+
+  	$rs = $db->query("select id, title from Movie");
+ 	if (!$rs) {
+	    echo "\nPDO::errorInfo():\n";
+	    print_r($db->errorInfo());
+		exit(1);
+	}
+
+    echo "<div class='form-group'>
+    	<label for='mid'>Movie</br></label>
+    	<select name='mid'>";
+
+    while ($row = $rs->fetch(PDO::FETCH_ASSOC)) {
+
+                  unset($id, $title);
+                  $id = $row['id'];
+                  $title = $row['title']; 
+                  echo '<option value="'.$id.'">'.$title.'</option>';
+                 
+	}
+
+    echo "</select><br></div>";
+    echo "<button type='submit' class='btn btn-default'>
+    		Add to Database</button></form>";
 
 	$valid_input = true;
 	if ($_GET["name"] == NULL || $_GET["name"] == '') {
@@ -82,9 +102,9 @@
 	$timestamp = $result['now()'];
 
 	$query = "insert into Review values (?, ?, ?, ?, ?)";
-	$vars = [$_GET["name"], $timestamp, $mid, $_GET["rating"], 
+	$vars = [$_GET["name"], $timestamp, $_GET["mid"], $_GET["rating"], 
 			$_GET["comment"]];
-			
+
 	$statement = $db->prepare($query);
 	$rs = $statement->execute($vars);
 	if (!$rs) {
