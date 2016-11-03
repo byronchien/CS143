@@ -34,7 +34,7 @@
 				$title = $_GET["title"];
 
 				try {
-					$db = new PDO('mysql:dbname=TEST;host=127.0.0.1', 'cs143', '');
+					$db = new PDO('mysql:dbname=CS143;host=127.0.0.1', 'cs143', '');
 				} catch (PDOException $e) {
 					echo 'Connection failed: ' . $e->getMessage();
 					return;
