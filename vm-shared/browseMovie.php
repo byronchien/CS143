@@ -6,10 +6,10 @@
 <div id="nav-bar">
 <!-- will be used on every page to navigate between functions -->
 	<ul>
-		<li><a href="http://localhost:1438/~cs143/add-content.php">
+		<li><a href="add-person.php">
 			Add Content</a></li>
-		<li><a href="">Review Content</a></li>
-		<li><a href="">Search Database</a></li>
+		<li><a href="add-comment.php">Review Content</a></li>
+		<li><a href="index.php">Search Database</a></li>
 	</ul>
 </div>
 
@@ -42,6 +42,8 @@
 
 				echo "<h3>Movie Info</h3>";
 
+				$movieId = $results["id"];
+
 				$resultsTable = "<table><tr><th>Title</th><th>Year</th>".
 					"<th>Rating</th><th>Company</th></tr>";
 				$resultsTable .= "<td>".$results["title"]."</td><td>".$results["year"];
@@ -73,6 +75,48 @@
 				$resultsTable .= "</table><br><br><br>";
 
 				echo $resultsTable;
+
+				echo "<h3>Reviews</h3>";
+
+				$movieReviews = "SELECT * FROM Review WHERE mid='".$movieId."'";
+
+				$query = $db->prepare($movieReviews);
+				$query->execute();
+				$results = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if (empty($results))
+				{
+					echo "<p>Currently no reviews. You can review this movie and others "
+						."<a href='add-comment.php'>here</a>.</p><br><br><br>";
+				}
+				else
+				{
+					$avgRating = "SELECT avg(rating) FROM Review GROUP BY mid HAVING".
+						" mid='".$movieID."'";
+
+					$query = $db->prepare($avgRating);
+					$query->execute();
+					$results2 = $query->fetchAll(PDO::FETCH_ASSOC);
+
+					$reviewDiv = "<div id='comments-container'>";
+
+					foreach($results as $row)
+					{
+						$reviewDiv .= "<div class='comment'>";
+						$reviewDiv .= "<p><span class='name'>".$row["name"]."</span>".
+							" rated this movie ".$row["rating"]." on ".$row["time"].
+							"</p><p>".$row["comment"]."</p></div>";
+
+					}
+
+					$reviewDiv .= "</div>";
+				}
+
+				echo $reviewDiv;
+
+				echo "<p>You can review this movie and others ".
+					"<a href='add-comment.php'>here</a>.</p><br><br><br>";
+
 			}
 		?>
 

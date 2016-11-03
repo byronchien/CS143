@@ -43,3 +43,13 @@ th {
 	padding:3px;
 	border: 1px solid black;
 }
+
+.comment {
+	text-align: left;
+	padding-bottom: 10px;
+	border-top: 1px solid black;
+}
+
+.name {
+	font-weight: 900;
+}

@@ -6,10 +6,10 @@
 <div id="nav-bar">
 <!-- will be used on every page to navigate between functions -->
 	<ul>
-		<li><a href="http://localhost:1438/~cs143/add-content.php">
+		<li><a href="add-person.php">
 			Add Content</a></li>
-		<li><a href="">Review Content</a></li>
-		<li><a href="">Search Database</a></li>
+		<li><a href="add-comment.php">Review Content</a></li>
+		<li><a href="index.php">Search Database</a></li>
 	</ul>
 </div>
 
