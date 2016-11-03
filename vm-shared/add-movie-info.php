@@ -24,8 +24,8 @@
     </div>
     <div class="form-group">
       <label for="year">Year</label>
-      <input type="text" class="form-control" placeholder="Text input" 
-      			name="year"/>
+      <input type="text" class="form-control" placeholder="Year input" 
+      			name="year">ie: 1996
     </div>
     <div class="form-group">
     	<label for="rating">Rating</label><br>

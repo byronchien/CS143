@@ -24,8 +24,8 @@
     </div>
     <div class="form-group">
       <label for="rating">Rating</label>
-      <input type="text" class="form-control" placeholder="Text input" 
-      			name="rating"/>
+      <input type="text" class="form-control" placeholder="Rating input" 
+      			name="rating"/>(0-10)
     </div>
     <div class="form-group">
       <label for="comment">Comment</br></label>
@@ -79,6 +79,10 @@
 	}
 	else if (!is_numeric($_GET["rating"])) {
 		echo "rating is not numeric<br>";
+		$valid_input = false;
+	}
+	else if ($_GET["rating"] > 10 || $_GET["rating"] < 0) {
+		echo "rating should be between 0 and 10<br>";
 		$valid_input = false;
 	}
 	if ($_GET["comment"] == NULL || $_GET["comment"] == '') {

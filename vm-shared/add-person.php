@@ -42,12 +42,12 @@
     </label>
     <div class="form-group">
       <label for="dob">Date of Birth</label>
-      <input type="text" class="form-control" placeholder="Text input" 
+      <input type="text" class="form-control" placeholder="Date input" 
       			name="dob">ie: 1996-07-19<br>
     </div>
     <div class="form-group">
       <label for="dod">Date of Death</label>
-      <input type="text" class="form-control" placeholder="Text input" 
+      <input type="text" class="form-control" placeholder="Date input" 
       			name="dod">(If still alive, leave blank)<br>
     </div>
     <button type="submit" class="btn btn-default">Add to Database</button>
