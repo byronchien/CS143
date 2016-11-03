@@ -16,6 +16,7 @@
 <div id="container">
 <!-- will be used to display the content of each page -->
 	<div id="main-content">
+		<h3>Search for an Actor,Actress, or Movie</h3>
 		<form action="index.php" method="GET">
 			Search:<input name="search" type="text" placeholder="Search">
 			<input type="submit" value="submit">
