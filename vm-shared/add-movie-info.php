@@ -66,7 +66,11 @@
 		echo "title is empty<br>";
 		$valid_input = false;
 	}
-	if (!is_numeric($_GET["year"])) {
+	if ($_GET["year"] == NULL || $_GET["year"] == '') {
+		echo "year is empty<br>";
+		$valid_input = false;
+	}
+	else if (!is_numeric($_GET["year"])) {
 		echo "year is not numeric<br>";
 		$valid_input = false;
 	}
@@ -112,14 +116,24 @@
 		$_GET["company"]];
 	$statement = $db->prepare($query);
 	$rs = $statement->execute($vars);
+	if (!$rs) {
+	    echo "\nPDO::errorInfo():\n";
+	    print_r($db->errorInfo());
+		exit(1);
+	}
 
 	// insert into MovieGenre
 	$query = "insert into MovieGenre values (?, ?)";
 	$vars = [$id, $_GET["genre"]];
 	$statement = $db->prepare($query);
 	$rs = $statement->execute($vars);
+	if (!$rs) {
+	    echo "\nPDO::errorInfo():\n";
+	    print_r($db->errorInfo());
+		exit(1);
+	}
 
-	$statement->free_result();
+	$db->close();
 ?>
 
 </p>

@@ -17,7 +17,7 @@
 
 <!-- will be used to get input to add new Actor/Director -->
 <form method="GET">
-   <label class="radio-inline">
+    <label class="radio-inline">
         <input type="radio" checked="checked" name="identity" value="Actor"/>
         Actor
     </label>
@@ -76,9 +76,36 @@
 		echo "date of birth is empty<br>";
 		$valid_input = false;
 	}
-	if ($_GET["dod"] == '') {
+
+	$test_arr = explode('-', $_GET["dob"]);
+	if (count($test_arr) == 3) {
+		if (!checkdate($test_arr[1], $test_arr[2], $test_arr[0])) {
+			echo "invalid date of birth";
+			$valid_input = false;
+		}
+	}
+	else {
+		echo "invalid date of birth";
+		$valid_input = false;		
+	}
+
+	if ($_GET["dod"] == '' || $_GET["dod"] == NULL) {
 		$_GET["dod"] = NULL;
 	}
+	else {
+		$test_arr = explode('-', $_GET["dob"]);
+		if (count($test_arr) == 3) {
+			if (!checkdate($test_arr[1], $test_arr[2], $test_arr[0])) {
+				echo "invalid date of death";
+				$valid_input = false;
+			}
+		}
+		else {
+			echo "invalid date of death";
+			$valid_input = false;		
+		}		
+	}
+
 	if ($valid_input == false) {
 		return;
 	}
@@ -120,7 +147,6 @@
 	$statement = $db->prepare($query);
 	$rs = $statement->execute($vars);
 	if (!$rs) {
-		echo "test";
 		// Update MaxPersonID
 		$query = "update MaxPersonID set (id = id - 1)";
 		$rs = $db->query($query);
