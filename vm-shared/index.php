@@ -62,7 +62,10 @@
 			foreach($results as $row)
 			{
 				$resultsTable .= "<tr>";
-				$resultsTable .= "<td>".$row["first"]." ".$row["last"]."</td>";
+				$resultsTable .= "<td>";
+				$resultsTable .= "<a href='browseActor.php?first=".$row["first"]
+					."&last=".$row["last"]."&dob=".$row["dob"]."'>";
+				$resultsTable .= $row["first"]." ".$row["last"]."</a></td>";
 				$resultsTable .= "<td>".$row["dob"]."</td>";
 
 				$resultsTable .= "</tr>";
