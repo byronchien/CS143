@@ -134,6 +134,30 @@ RC SqlEngine::load(const string& table, const string& loadfile, bool index)
 {
   /* Read loadfile with fstream, fgets, etc */
 
+  string line;
+  ifstream fs;
+  fs.open(loadfile.c_str(), ios::in);
+  if(fs.is_open()) {
+
+    string filename = table + ".tbl";
+    RecordFile recordfile(filename, 'w');
+
+    while (getline (fs, line)) {
+      int key;
+      string value;
+      RecordId recordID;
+      parseLoadLine(line, key, value);
+      recordfile.append(key, value, recordID);
+    }
+
+    fs.close();
+  }
+  else {
+    cout << "Unable to open file" << endl;
+  }
+  
+
+
   /* if file does not yet exist create a RecordFile in the current working 
       directory and store all tuples in the file. */
 
