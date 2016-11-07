@@ -132,7 +132,15 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
 
 RC SqlEngine::load(const string& table, const string& loadfile, bool index)
 {
-  /* your code here */
+  /* Read loadfile with fstream, fgets, etc */
+
+  /* if file does not yet exist create a RecordFile in the current working 
+      directory and store all tuples in the file. */
+
+  /* Open the input RecordFile */
+
+  /* Parse each line of the loadfile to read a tuple using 
+      SqlEngine::parseLoadLine(), and insert the tuple to the Record File */
 
   return 0;
 }
