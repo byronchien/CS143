@@ -50,7 +50,27 @@ int BTLeafNode::getKeyCount()
  * @return 0 if successful. Return an error code if the node is full.
  */
 RC BTLeafNode::insert(int key, const RecordId& rid)
-{ return 0; }
+{ 
+	if (getKeyCount() == 84) {
+		return -1;
+	} else {
+		int index = 0;
+		locate(key, index);
+
+		for (int i = getKeyCount(); i > index; i--)
+		{
+			int k = i-1;
+			buffer[i * 12 + 8] = buffer[k * 12 + 8];
+			buffer[i * 12 + 4] = buffer[k * 12 + 4];
+			buffer[i * 12] = buffer[k * 12];
+		}
+
+		buffer[index] = rid.pid;
+		buffer[index + 4] = rid.sid;
+		buffer[index + 8] = key;
+		return 0;
+	}
+}
 
 /*
  * Insert the (key, rid) pair to the node
@@ -64,7 +84,41 @@ RC BTLeafNode::insert(int key, const RecordId& rid)
  */
 RC BTLeafNode::insertAndSplit(int key, const RecordId& rid, 
                               BTLeafNode& sibling, int& siblingKey)
-{ return 0; }
+{ 
+	if (getKeyCount() != 84)
+		return -1;
+
+	int middlekey = 0;
+	RecordId middlerid;
+	readEntry(43, middlekey, middlerid);
+
+	if (middlekey > key) {
+		for (int i = 0; i < 42 * 12; i += 4)
+		{
+			sibling.buffer[i] = (int) buffer[i + 42 * 12];
+		}
+
+		buffer[PageFile::PAGE_SIZE - 8] = 43;
+		sibling.buffer[PageFile::PAGE_SIZE - 8] = 42;
+		insert(key, rid);
+
+		siblingKey = (int) sibling.buffer[0];
+		return 0;
+
+	} else {
+		for (int i = 0; i < 42 * 12; i += 4)
+		{
+			sibling.buffer[i] = (int) buffer[i + 43 * 12];
+		}
+
+		buffer[PageFile::PAGE_SIZE - 8] = 43;
+		sibling.buffer[PageFile::PAGE_SIZE - 8] = 42;
+		sibling.insert(key, rid);
+
+		siblingKey = (int) sibling.buffer[0];
+		return 0;
+	}
+}
 
 /**
  * If searchKey exists in the node, set eid to the index entry
@@ -88,6 +142,11 @@ RC BTLeafNode::locate(int searchKey, int& eid)
 		if (buffer[i * 12 + 8] == searchKey) {
 			eid = i;
 			return 0;
+		}
+
+		if (buffer[i * 12 + 8] > searchKey) {
+			eid = i - 1;
+			return RC_NO_SUCH_RECORD;
 		}
 	}
 	return -1;
