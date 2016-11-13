@@ -9,7 +9,14 @@ using namespace std;
  * @return 0 if successful. Return an error code if there is an error.
  */
 RC BTLeafNode::read(PageId pid, const PageFile& pf)
-{ return 0; }
+{ 
+	if (pid >= 0) { 
+		pf.read(pid, (void*)buffer);
+		return 0; 
+	} else {
+		return -1;
+	}
+}
     
 /*
  * Write the content of the node to the page pid in the PageFile pf.
@@ -18,14 +25,23 @@ RC BTLeafNode::read(PageId pid, const PageFile& pf)
  * @return 0 if successful. Return an error code if there is an error.
  */
 RC BTLeafNode::write(PageId pid, PageFile& pf)
-{ return 0; }
+{ 	
+	if (pid >= 0) {
+		pf.write(pid, (const void*) buffer);
+		return 0; 
+	} else {
+		return -1;
+	}
+}
 
 /*
  * Return the number of keys stored in the node.
  * @return the number of keys in the node
  */
 int BTLeafNode::getKeyCount()
-{ return 0; }
+{ 
+	return (int) buffer[PageFile::PAGE_SIZE - 8];
+}
 
 /*
  * Insert a (key, rid) pair to the node.
@@ -62,7 +78,20 @@ RC BTLeafNode::insertAndSplit(int key, const RecordId& rid,
  * @return 0 if searchKey is found. Otherwise return an error code.
  */
 RC BTLeafNode::locate(int searchKey, int& eid)
-{ return 0; }
+{ 
+	/**
+	 * Search through the node sequentially
+	 */
+	int limit = buffer[PageFile::PAGE_SIZE - 8];
+	for (int i = 0; i < limit; i++)
+	{
+		if (buffer[i * 12 + 8] == searchKey) {
+			eid = i;
+			return 0;
+		}
+	}
+	return -1;
+}
 
 /*
  * Read the (key, rid) pair from the eid entry.
@@ -72,14 +101,28 @@ RC BTLeafNode::locate(int searchKey, int& eid)
  * @return 0 if successful. Return an error code if there is an error.
  */
 RC BTLeafNode::readEntry(int eid, int& key, RecordId& rid)
-{ return 0; }
+{ 
+	if (eid > getKeyCount()) {
+		return -1;
+	} else {
+		void* pointer = buffer + 12 * eid;
+		rid = *(RecordId*) pointer; 
+		//rid = (RecordId) buffer[12 * eid];
+
+		key = (int) buffer[12 * eid + 8];
+		return 0;
+	}
+
+}
 
 /*
  * Return the pid of the next slibling node.
  * @return the PageId of the next sibling node 
  */
 PageId BTLeafNode::getNextNodePtr()
-{ return 0; }
+{ 
+	return (PageId) buffer[PageFile::PAGE_SIZE - 4]; 
+}
 
 /*
  * Set the pid of the next slibling node.
@@ -87,7 +130,14 @@ PageId BTLeafNode::getNextNodePtr()
  * @return 0 if successful. Return an error code if there is an error.
  */
 RC BTLeafNode::setNextNodePtr(PageId pid)
-{ return 0; }
+{ 
+	if (pid >= 0) {
+		buffer[PageFile::PAGE_SIZE - 4] = pid;
+		return 0; 
+	} else {
+		return -1;
+	}
+}
 
 /*
  * Read the content of the node from the page pid in the PageFile pf.
