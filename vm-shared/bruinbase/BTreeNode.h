@@ -98,7 +98,8 @@ class BTLeafNode {
     */
     RC write(PageId pid, PageFile& pf);
 
-  private:
+    // Testing
+  //private:
    /**
     * The main memory buffer for loading the content of the disk page 
     * that contains the node.
@@ -176,6 +177,7 @@ class BTNonLeafNode {
     */
     RC write(PageId pid, PageFile& pf);
 
+    // Testing
   //private:
    /**
     * The main memory buffer for loading the content of the disk page 

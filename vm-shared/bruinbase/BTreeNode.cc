@@ -1,8 +1,5 @@
 #include "BTreeNode.h"
 
-// Testing
-#include <cstdio>
-
 using namespace std;
 
 /*
@@ -257,9 +254,6 @@ RC BTNonLeafNode::insert(int key, PageId pid)
 			k = i-8;
 			buffer[i + 4] = (int) buffer[k + 4];
 			buffer[i] = (int) buffer[k];
-
-			printf("Insert: %i\n", buffer[i]);
-			printf("Insert: %i\n", buffer[i + 4]);
 		}
 
 		buffer[k] = key;

@@ -16,7 +16,7 @@
 
 int main()
 {
- 	// Testing BTreeNode
+ 	// Testing
 	// LeafNode
 	printf("LeafNode tests\n");
 
