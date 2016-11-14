@@ -11,10 +11,9 @@ using namespace std;
 RC BTLeafNode::read(PageId pid, const PageFile& pf)
 { 
 	if (pid >= 0) { 
-		pf.read(pid, (void*)buffer);
-		return 0; 
+		return pf.read(pid, (void*)buffer);
 	} else {
-		return -1;
+		return RC_FILE_READ_FAILED;
 	}
 }
     
@@ -27,10 +26,9 @@ RC BTLeafNode::read(PageId pid, const PageFile& pf)
 RC BTLeafNode::write(PageId pid, PageFile& pf)
 { 	
 	if (pid >= 0) {
-		pf.write(pid, (const void*) buffer);
-		return 0; 
+		return pf.write(pid, (const void*) buffer);
 	} else {
-		return -1;
+		return RC_FILE_READ_FAILED;
 	}
 }
 
@@ -52,7 +50,7 @@ int BTLeafNode::getKeyCount()
 RC BTLeafNode::insert(int key, const RecordId& rid)
 { 
 	if (getKeyCount() == 84) {
-		return -1;
+		return RC_NODE_FULL;
 	} else {
 		int index = 0;
 		locate(key, index);
@@ -198,28 +196,6 @@ RC BTLeafNode::setNextNodePtr(PageId pid)
 	}
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*
  * Read the content of the node from the page pid in the PageFile pf.
  * @param pid[IN] the PageId to read
@@ -256,7 +232,7 @@ RC BTNonLeafNode::write(PageId pid, PageFile& pf)
  */
 int BTNonLeafNode::getKeyCount()
 { 	
-	return (int) buffer[PageFile::PAGE_SIZE - 4];
+	return (int) buffer[PageFile::PAGE_SIZE - 8];
 }
 
 /*
@@ -282,7 +258,7 @@ RC BTNonLeafNode::insert(int key, PageId pid)
 
 		buffer[index] = pid;
 		buffer[index + 4] = key;
-		buffer[PageFile::PAGE_SIZE - 4]++;
+		buffer[PageFile::PAGE_SIZE - 8]++;
 
 		return 0;
 	}
