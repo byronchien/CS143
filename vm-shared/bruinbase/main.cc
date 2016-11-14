@@ -17,43 +17,88 @@
 int main()
 {
  	// Testing
+ 	int key;
+	PageId pid;
 	// LeafNode
+	/*
 	printf("LeafNode tests\n");
 
  	BTLeafNode testLeafNode;
  	printf("Initial key count: %i\n", testLeafNode.getKeyCount());
 
- 	int key = 1;
+ 	key = 1;
  	RecordId rid = {1,2};
  	testLeafNode.insert(key, rid);
  	printf("key count should be 1: %i\n", testLeafNode.getKeyCount());
+ 	*/
 
  	// NonLeafNode
  	printf("NonLeafNode tests\n");
 
+ 	// Insert
+ 	
   	BTNonLeafNode testNonLeafNode;
  	printf("Initial key count: %i\n", testNonLeafNode.getKeyCount());
 
- 	key = 1;
- 	PageId pid = 1;
+ 	key = 127;
+ 	pid = 1;
  	testNonLeafNode.insert(key, pid);
- 	printf("key count should be 1: %i\n", testNonLeafNode.getKeyCount());
 
- 	printf("Key: %i\n", testNonLeafNode.buffer[0]);
-	printf("PageId: %i\n", testNonLeafNode.buffer[4]);
-	printf("Key Count: %i\n", testNonLeafNode.buffer[1024 - 8]);
+ 	key = 99;
+ 	pid = 2;
+ 	testNonLeafNode.insert(key, pid);
 
  	key = 77;
- 	pid = 33;
+ 	pid = 3;
  	testNonLeafNode.insert(key, pid);
- 	printf("key count should be 2: %i\n", testNonLeafNode.getKeyCount());
 
- 	printf("Key: %i\n", testNonLeafNode.buffer[0]);
-	printf("PageId: %i\n", testNonLeafNode.buffer[4]);
- 	printf("Key: %i\n", testNonLeafNode.buffer[8]);
-	printf("PageId: %i\n", testNonLeafNode.buffer[12]);
-	printf("Key Count: %i\n", testNonLeafNode.buffer[1024 - 8]);
+  	key = 77;
+ 	pid = 3;
+ 	testNonLeafNode.insert(key, pid);
 
+ 	for (int i = 0; i < 4; i++) {
+		printf("Key, PageId %i: %i, %i\n", i, testNonLeafNode.buffer[i * 8],
+			testNonLeafNode.buffer[i * 8 + 4]);
+	}
+	printf("Key Count: %i\n", testNonLeafNode.getKeyCount());	
+	
+	
+	// InsertAndSplit
+	
+	BTNonLeafNode testNonLeafNode2;
+	for (int i = 0; i < 84; i++) {
+		testNonLeafNode2.insert(i, i);
+	}
+ 	printf("Initial key count: %i\n", testNonLeafNode2.getKeyCount());
+	
+	for (int i = 0; i < 84; i++) {
+		printf("Key, PageId %i: %i, %i\n", i, testNonLeafNode2.buffer[i * 8],
+			testNonLeafNode2.buffer[i * 8 + 4]);
+	}
+	printf("Key Count: %i\n", testNonLeafNode2.getKeyCount());	
+	
+	BTNonLeafNode sibling;
+	
+	int midKey = -1;
+	// 1,1 40,40, 41,41, 42,42, 80,80
+	testNonLeafNode2.insertAndSplit(80,80, sibling, midKey);
+	
+	for (int i = 0; i < testNonLeafNode2.getKeyCount(); i++) {
+		printf("Key, PageId %i: %i, %i\n", i, testNonLeafNode2.buffer[i * 8],
+			testNonLeafNode2.buffer[i * 8 + 4]);
+	}
+	printf("Key Count: %i\n", testNonLeafNode2.getKeyCount());	
+	
+	for (int i = 0; i < sibling.getKeyCount(); i++) {
+		printf("Key, PageId %i: %i, %i\n", i, sibling.buffer[i * 8],
+			sibling.buffer[i * 8 + 4]);
+	}
+	printf("Key Count: %i\n", sibling.getKeyCount());	
+	
+	printf("midKey: %i\n", midKey);	
+	
+
+	// Testing
   // run the SQL engine taking user commands from standard input (console).
   //SqlEngine::run(stdin);
   return 0;
