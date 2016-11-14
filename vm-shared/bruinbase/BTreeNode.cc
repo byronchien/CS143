@@ -372,4 +372,10 @@ RC BTNonLeafNode::locateChildPtr(int searchKey, PageId& pid)
  * @return 0 if successful. Return an error code if there is an error.
  */
 RC BTNonLeafNode::initializeRoot(PageId pid1, int key, PageId pid2)
-{ return 0; }
+{ 
+	buffer[0] = pid1;
+	buffer[4] = key;
+	buffer[8] = pid2;
+	buffer[PageFile::PAGE_SIZE - 8] = 1;
+	return 0; 
+}
