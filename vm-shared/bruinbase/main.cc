@@ -11,6 +11,7 @@
 #include "SqlEngine.h"
 #include <cstdio>
 
+// Testing
 #include "BTreeNode.h"
 
 int main()
@@ -38,7 +39,20 @@ int main()
  	testNonLeafNode.insert(key, pid);
  	printf("key count should be 1: %i\n", testNonLeafNode.getKeyCount());
 
+ 	printf("Key: %i\n", testNonLeafNode.buffer[0]);
+	printf("PageId: %i\n", testNonLeafNode.buffer[4]);
+	printf("Key Count: %i\n", testNonLeafNode.buffer[1024 - 8]);
 
+ 	key = 77;
+ 	pid = 33;
+ 	testNonLeafNode.insert(key, pid);
+ 	printf("key count should be 2: %i\n", testNonLeafNode.getKeyCount());
+
+ 	printf("Key: %i\n", testNonLeafNode.buffer[0]);
+	printf("PageId: %i\n", testNonLeafNode.buffer[4]);
+ 	printf("Key: %i\n", testNonLeafNode.buffer[8]);
+	printf("PageId: %i\n", testNonLeafNode.buffer[12]);
+	printf("Key Count: %i\n", testNonLeafNode.buffer[1024 - 8]);
 
   // run the SQL engine taking user commands from standard input (console).
   //SqlEngine::run(stdin);

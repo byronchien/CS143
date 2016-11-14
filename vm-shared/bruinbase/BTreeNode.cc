@@ -1,5 +1,8 @@
 #include "BTreeNode.h"
 
+// Testing
+#include <cstdio>
+
 using namespace std;
 
 /*
@@ -247,13 +250,16 @@ RC BTNonLeafNode::insert(int key, PageId pid)
 	if (getKeyCount() == 84) {
 		return RC_NODE_FULL;
 	} else {
-		int k = 0;
+		int k = getKeyCount() * 8;
 
-		for (int i = getKeyCount() * 8; i != 0 && buffer[i] > pid; i -= 8)
+		for (int i = k; i != 0 && buffer[i - 8] > key; i -= 8)
 		{
 			k = i-8;
 			buffer[i + 4] = (int) buffer[k + 4];
 			buffer[i] = (int) buffer[k];
+
+			printf("Insert: %i\n", buffer[i]);
+			printf("Insert: %i\n", buffer[i + 4]);
 		}
 
 		buffer[k] = key;
