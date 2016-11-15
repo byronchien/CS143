@@ -36,8 +36,7 @@ int main()
  	printf("NonLeafNode tests\n");
 
  	// Insert
- 	
-  	BTNonLeafNode testNonLeafNode;
+ 	BTNonLeafNode testNonLeafNode;
  	printf("Initial key count: %i\n", testNonLeafNode.getKeyCount());
 
  	key = 127;
@@ -60,23 +59,18 @@ int main()
 		printf("Key, PageId %i: %i, %i\n", i, testNonLeafNode.buffer[i * 8],
 			testNonLeafNode.buffer[i * 8 + 4]);
 	}
+	
 	printf("Key Count: %i\n", testNonLeafNode.getKeyCount());	
-	
-	
+
 	// InsertAndSplit
 	
 	BTNonLeafNode testNonLeafNode2;
+	printf("Initial key count: %i\n", testNonLeafNode2.getKeyCount());
 	for (int i = 0; i < 84; i++) {
 		testNonLeafNode2.insert(i, i);
 	}
- 	printf("Initial key count: %i\n", testNonLeafNode2.getKeyCount());
-	
-	for (int i = 0; i < 84; i++) {
-		printf("Key, PageId %i: %i, %i\n", i, testNonLeafNode2.buffer[i * 8],
-			testNonLeafNode2.buffer[i * 8 + 4]);
-	}
-	printf("Key Count: %i\n", testNonLeafNode2.getKeyCount());	
-	
+	printf("Key count (84): %i\n", testNonLeafNode2.getKeyCount());
+
 	BTNonLeafNode sibling;
 	
 	int midKey = -1;
@@ -93,11 +87,10 @@ int main()
 		printf("Key, PageId %i: %i, %i\n", i, sibling.buffer[i * 8],
 			sibling.buffer[i * 8 + 4]);
 	}
-	printf("Key Count: %i\n", sibling.getKeyCount());	
+	printf("Key Count sibling: %i\n", sibling.getKeyCount());	
 	
 	printf("midKey: %i\n", midKey);	
 	
-
 	// Testing
   // run the SQL engine taking user commands from standard input (console).
   //SqlEngine::run(stdin);

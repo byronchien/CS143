@@ -18,7 +18,7 @@ RC BTLeafNode::read(PageId pid, const PageFile& pf)
 }
     
 /*
- * Write the content of the node to the page pid in the PageFile pf.
+ * Write the content of the node to the page pid in the PageFile pf.wdr
  * @param pid[IN] the PageId to write to
  * @param pf[IN] PageFile to write to
  * @return 0 if successful. Return an error code if there is an error.
@@ -197,6 +197,11 @@ RC BTLeafNode::setNextNodePtr(PageId pid)
 	}
 }
 
+BTNonLeafNode::BTNonLeafNode()
+{ 
+	buffer[PageFile::PAGE_SIZE - 8] = 0;
+}
+
 /*
  * Read the content of the node from the page pid in the PageFile pf.
  * @param pid[IN] the PageId to read
@@ -246,13 +251,17 @@ RC BTNonLeafNode::insert(int key, PageId pid)
 { 
 	if (getKeyCount() == 84) {
 		return RC_NODE_FULL;
-	} else {
+	}
+	else if (getKeyCount() > 84) {
+		return -1;
+	}
+	else {
 		int k = getKeyCount() * 8;
 
 		for (int i = k; i != 0 && buffer[i - 8] > key; i -= 8)
 		{
 			k = i-8;
-			buffer[i + 4] = (int) buffer[k + 4];
+			buffer[i + 4] = (PageId) buffer[k + 4];
 			buffer[i] = (int) buffer[k];
 		}
 
