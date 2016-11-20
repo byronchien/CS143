@@ -8,6 +8,8 @@ BTLeafNode::BTLeafNode()
 	{
 		buffer[i] = 0;
 	}
+
+	buffer[PageFile::PAGE_SIZE - 4] = -1;
 }
 
 /*

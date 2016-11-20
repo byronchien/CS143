@@ -31,7 +31,7 @@ RC BTreeIndex::open(const string& indexname, char mode)
 {
    	RC   rc;
   	// open the page file
-  	if ((rc = pf.open(filename, mode)) < 0) return rc;
+  	if ((rc = pf.open(indexname, mode)) < 0) return rc;
 
   	return 0;
 }
@@ -76,6 +76,38 @@ RC BTreeIndex::insert(int key, const RecordId& rid)
  */
 RC BTreeIndex::locate(int searchKey, IndexCursor& cursor)
 {
+	// find leaf node
+
+	// search for the key
+	// assuming the page has been found and pid is in the pid variable
+	int pid; // remove later when previous part is done
+	cursor.pid = pid;
+	cursor.eid = 0;
+
+	int key;
+	RecordId rid;
+	RC rc;
+	IndexCursor previous;
+	while(1)
+	{
+		previous = cursor;
+		rc = readForward(cursor, key, rid);
+		if (rc < 0) return rc;
+		if (key >= searchKey) {
+			cursor = previous;
+			if (key != searchKey)
+				return RC_NO_SUCH_RECORD;
+			else
+				return 0;
+		}
+
+		if (cursor.pid < 0) {
+			cursor = previous;
+			return RC_NO_SUCH_RECORD;
+		}
+
+	}
+
     return 0;
 }
 
@@ -93,7 +125,13 @@ RC BTreeIndex::readForward(IndexCursor& cursor, int& key, RecordId& rid)
 	RC rc;
 	if ((rc = node.read(cursor.pid, pf)) < 0) return rc;
 	if ((rc = node.readEntry(cursor.eid, key, rid)) < 0) return rc;
-	cursor.eid += 1;
+
+	if (cursor.eid != 84) {
+		cursor.eid++;
+	} else {
+		cursor.eid = 0;
+		cursor.pid = node.getNextNodePtr();
+	}
 
     return 0;
 }
