@@ -29,7 +29,11 @@ BTreeIndex::BTreeIndex()
  */
 RC BTreeIndex::open(const string& indexname, char mode)
 {
-    return 0;
+   	RC   rc;
+  	// open the page file
+  	if ((rc = pf.open(filename, mode)) < 0) return rc;
+
+  	return 0;
 }
 
 /*
@@ -38,7 +42,7 @@ RC BTreeIndex::open(const string& indexname, char mode)
  */
 RC BTreeIndex::close()
 {
-    return 0;
+	return pf.close();
 }
 
 /*
