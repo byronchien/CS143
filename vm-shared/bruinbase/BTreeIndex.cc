@@ -66,7 +66,8 @@ RC BTreeIndex::insert(int key, const RecordId& rid)
 	IndexCursor index;
 
 	if ((rc = locate(key, index)) == RC_NO_SUCH_RECORD) {
-		return insertRecursive(key, rid, 1);
+		int midKey = -1;
+		return insertRecursive(key, rid, 1, midKey);
 	}
 	else {
 		// duplicate key value
@@ -74,7 +75,8 @@ RC BTreeIndex::insert(int key, const RecordId& rid)
 	}
 }
 
-RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int curHeight)
+RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int curHeight,
+	int& midKey)
 {
 	RC rc;
 	// if we are at leaf nodes
@@ -85,7 +87,10 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int curHeight)
 		rc = leafnode.insert(key, rid);
 
 		if (rc == 0) {	
-			return leafnode.write(rid.pid, pf);
+			if ((rc = leafnode.write(rid.pid, pf)) != 0) {
+				return rc;
+			}
+			return 0;
 		}	
 		else if (rc == RC_NODE_FULL) {
 			BTLeafNode sibling;
@@ -98,6 +103,7 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int curHeight)
 				if ((rc = sibling.write(pf.endPid(), pf)) != 0) {
 					return rc;
 				}
+				midKey = siblingKey;
 				return 0;
 			}
 		}
@@ -106,10 +112,12 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int curHeight)
 		}
 	}
 
-	if (insertRecursive(key, rid, curHeight+1) == 0) {
-		BTNonLeafNode node;
+	// insert non leaf node to point to new leaf node
+	if (insertRecursive(key, rid, curHeight+1) == 0 && midKey != -1) {
+		int insertKey = midKey;
+		midKey = -1;
 		node.read(rid.pid, pf);
-		rc = node.insert(key, rid.pid);
+		rc = node.insert(insertKey, rid.pid);
 
 		if (rc == 0) {	
 			return node.write(rid.pid, pf);
@@ -117,14 +125,22 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int curHeight)
 		else if (rc == RC_NODE_FULL) {
 			BTNonLeafNode sibling;
 			int siblingKey;
-			if (node.insertAndSplit(key, rid, sibling, siblingKey) == 0) {
+			if (node.insertAndSplit(insertKey, rid, sibling, siblingKey) == 0) {
 				if ((rc = node.write(rid.pid, pf)) != 0) {
 					return rc;
 				}
-				if ((rc = sibling.write(pf.endPid(), pf)) != 0) {
+				PageId siblingPid = pf.endPid();
+				if ((rc = sibling.write(siblingPid, pf)) != 0) {
 					return rc;
 				}
-				return 0;
+				midKey = siblingKey;
+
+				// check if we need to initializeRoot
+				if (curHeight == 1) {
+					rc = initializeRoot(rid.pid , midKey, siblingPid);
+				}
+
+				return rc;
 			}
 		}
 		else {
