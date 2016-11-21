@@ -82,6 +82,7 @@ RC BTLeafNode::insert(int key, const RecordId& rid)
 		buffer[index * 12 + 4] = rid.sid;
 		buffer[index * 12+ 8] = key;
 		buffer[PageFile::PAGE_SIZE - 8]++;
+
 		return 0;
 	}
 }

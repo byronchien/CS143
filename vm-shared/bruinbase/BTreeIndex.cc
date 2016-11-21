@@ -56,10 +56,18 @@ RC BTreeIndex::insert(int key, const RecordId& rid)
 {
 	// if tree is empty
 	if (rootPid == -1) {
-		BTLeafNode root;
+		BTLeafNode leaf;
+		leaf.insert(key, rid);
+		PageId pid = pf.endPid();
+		leaf.write(pid, pf);
+
+		BTNonLeafNode root;
+		root.insert(key, pid);
 		rootPid = pf.endPid();
-		treeHeight++;
-		return root.write(rootPid, pf);
+		root.write(rootPid, pf);
+
+		treeHeight = 2;
+		return 0;
 	}
 
 	RC rc;
@@ -171,14 +179,14 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight, int
 RC BTreeIndex::locate(int searchKey, IndexCursor& cursor)
 {
 	RC rc;
-	int pid = rootPid;
+	PageId pid = rootPid;
 	// find leaf node pid
 	int currHeight = 1;
 	BTNonLeafNode node;
+	if ((rc = node.read(pid, pf)) != 0) return -5;
 	while(currHeight != treeHeight) {
-		if ((rc = node.read(pid, pf)) != 0) return rc;
 		if ((rc = node.locateChildPtr(searchKey, pid)) != 0) return rc;
-		treeHeight++;
+		currHeight++;
 	}	
 
 	// search for the key

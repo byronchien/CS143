@@ -12,7 +12,6 @@
 
 #include "RecordFile.h"
 #include "PageFile.h"
-
 /**
  * BTLeafNode: The class representing a B+tree leaf node.
  */
@@ -105,7 +104,7 @@ class BTLeafNode {
     RC write(PageId pid, PageFile& pf);
 
     // Testing
-  private:
+  //private:
    /**
     * The main memory buffer for loading the content of the disk page 
     * that contains the node.

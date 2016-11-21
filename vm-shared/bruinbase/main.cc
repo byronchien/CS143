@@ -12,10 +12,56 @@
 #include <cstdio>
 
 // Testing
+#include "BTreeIndex.h"
 #include "BTreeNode.h"
 
 int main()
 {
+	BTreeIndex btree;
+	RecordId rid;
+	/*for (int i = 0; i < 84; i++) {
+		rid.pid = i;
+		rid.sid = i;
+		btree.insert(i, rid);
+	}*/
+	rid.pid = 1;
+	rid.sid = 2;
+	btree.insert(0, rid);
+
+	IndexCursor cursor;
+	RC rc;
+	if ((rc = btree.locate(0,cursor)) != 0)
+		printf("yo");
+		printf("%i", rc);
+
+	BTLeafNode node;
+	node.read(cursor.pid, btree.pf);
+
+	RecordId rid2;
+	int key;
+	node.readEntry(0, key, rid2);
+	printf("%i %i %i \n", key, rid2.pid, rid2.sid);
+
+/*
+	IndexCursor cursor;
+
+	btree.locate(0, cursor);
+
+	BTLeafNode node;
+
+	node.read(cursor.pid, btree.pf);
+
+	int x;
+	for (int k = 0; k < node.getKeyCount(); k++)
+	{
+		node.readEntry(k, x, rid);
+		printf("Entry: {Key: %i, RecordId pid: %i, RecordId sid: %i\n",
+			x, rid.pid, rid.sid);
+	}
+
+	printf("same\n");
+*/
+
 	/*
  	// Testing
  	int key;
@@ -130,7 +176,7 @@ int main()
 	*/
 	// Testing
   // run the SQL engine taking user commands from standard input (console).
-  SqlEngine::run(stdin);
+  //SqlEngine::run(stdin);
 
 
   return 0;

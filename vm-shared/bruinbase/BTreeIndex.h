@@ -90,7 +90,7 @@ class BTreeIndex {
    */
   RC readForward(IndexCursor& cursor, int& key, RecordId& rid);
   
- private:
+ //private:
   PageFile pf;         /// the PageFile used to store the actual b+tree in disk
 
   PageId   rootPid;    /// the PageId of the root node
