@@ -138,6 +138,7 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int curHeight,
 				// check if we need to initializeRoot
 				if (curHeight == 1) {
 					rc = initializeRoot(rid.pid , midKey, siblingPid);
+					height++;
 				}
 
 				return rc;
@@ -169,17 +170,24 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int curHeight,
  */
 RC BTreeIndex::locate(int searchKey, IndexCursor& cursor)
 {
-	// find leaf node
+	RC rc;
+	int pid = rootPid;
+	// find leaf node pid
+	int curHeight = 1;
+	BTNonLeafNode node;
+	while(currHeight != height) {
+		if ((rc = node.read(pid, pf)) != 0) return rc;
+		if ((rc = locateChildPtr(searchKey, pid)) != 0) return rc;
+		height++;
+	}	
 
 	// search for the key
 	// assuming the page has been found and pid is in the pid variable
-	int pid; // remove later when previous part is done
 	cursor.pid = pid;
 	cursor.eid = 0;
 
 	int key;
 	RecordId rid;
-	RC rc;
 	IndexCursor previous;
 	while(1)
 	{
