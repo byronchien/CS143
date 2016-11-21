@@ -18,7 +18,7 @@ using namespace std;
 BTreeIndex::BTreeIndex()
 {
     rootPid = -1;
-    height = 0;
+    treeHeight = 0;
 }
 
 /*
@@ -55,11 +55,11 @@ RC BTreeIndex::close()
 RC BTreeIndex::insert(int key, const RecordId& rid)
 {
 	// if tree is empty
-	if (rootPid = -1) {
+	if (rootPid == -1) {
 		BTLeafNode root;
 		rootPid = pf.endPid();
-		height++;
-		return root.write(pid, pf);
+		treeHeight++;
+		return root.write(rootPid, pf);
 	}
 
 	RC rc;
@@ -67,7 +67,7 @@ RC BTreeIndex::insert(int key, const RecordId& rid)
 
 	if ((rc = locate(key, index)) == RC_NO_SUCH_RECORD) {
 		int midKey = -1;
-		return insertRecursive(key, rid, 1, midKey);
+		return this->insertRecursive(key, rid, 1, midKey);
 	}
 	else {
 		// duplicate key value
@@ -75,12 +75,11 @@ RC BTreeIndex::insert(int key, const RecordId& rid)
 	}
 }
 
-RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int curHeight,
-	int& midKey)
+RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight, int& midKey)
 {
 	RC rc;
 	// if we are at leaf nodes
-	if(curHeight == height)
+	if(currHeight == treeHeight)
 	{
 		BTLeafNode leafnode;
 		leafnode.read(rid.pid, pf);
@@ -113,9 +112,10 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int curHeight,
 	}
 
 	// insert non leaf node to point to new leaf node
-	if (insertRecursive(key, rid, curHeight+1) == 0 && midKey != -1) {
+	if (insertRecursive(key, rid, currHeight+1, midKey) == 0 && midKey != -1) {
 		int insertKey = midKey;
 		midKey = -1;
+		BTNonLeafNode node;
 		node.read(rid.pid, pf);
 		rc = node.insert(insertKey, rid.pid);
 
@@ -125,7 +125,7 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int curHeight,
 		else if (rc == RC_NODE_FULL) {
 			BTNonLeafNode sibling;
 			int siblingKey;
-			if (node.insertAndSplit(insertKey, rid, sibling, siblingKey) == 0) {
+			if (node.insertAndSplit(insertKey, rid.pid, sibling, siblingKey) == 0) {
 				if ((rc = node.write(rid.pid, pf)) != 0) {
 					return rc;
 				}
@@ -136,9 +136,9 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int curHeight,
 				midKey = siblingKey;
 
 				// check if we need to initializeRoot
-				if (curHeight == 1) {
-					rc = initializeRoot(rid.pid , midKey, siblingPid);
-					height++;
+				if (currHeight == 1) {
+					rc = node.initializeRoot(rid.pid , midKey, siblingPid);
+					treeHeight++;
 				}
 
 				return rc;
@@ -173,12 +173,12 @@ RC BTreeIndex::locate(int searchKey, IndexCursor& cursor)
 	RC rc;
 	int pid = rootPid;
 	// find leaf node pid
-	int curHeight = 1;
+	int currHeight = 1;
 	BTNonLeafNode node;
-	while(currHeight != height) {
+	while(currHeight != treeHeight) {
 		if ((rc = node.read(pid, pf)) != 0) return rc;
-		if ((rc = locateChildPtr(searchKey, pid)) != 0) return rc;
-		height++;
+		if ((rc = node.locateChildPtr(searchKey, pid)) != 0) return rc;
+		treeHeight++;
 	}	
 
 	// search for the key
