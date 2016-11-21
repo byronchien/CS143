@@ -18,6 +18,7 @@ using namespace std;
 BTreeIndex::BTreeIndex()
 {
     rootPid = -1;
+    height = 0;
 }
 
 /*
@@ -53,7 +54,83 @@ RC BTreeIndex::close()
  */
 RC BTreeIndex::insert(int key, const RecordId& rid)
 {
-    return 0;
+	// if tree is empty
+	if (rootPid = -1) {
+		BTLeafNode root;
+		rootPid = pf.endPid();
+		height++;
+		return root.write(pid, pf);
+	}
+
+	RC rc;
+	IndexCursor index;
+
+	if ((rc = locate(key, index)) == RC_NO_SUCH_RECORD) {
+		return insertRecursive(key, rid, 1);
+	}
+	else {
+		// duplicate key value
+		return -1;
+	}
+}
+
+RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int curHeight)
+{
+	RC rc;
+	// if we are at leaf nodes
+	if(curHeight == height)
+	{
+		BTLeafNode leafnode;
+		leafnode.read(rid.pid, pf);
+		rc = leafnode.insert(key, rid);
+
+		if (rc == 0) {	
+			return leafnode.write(rid.pid, pf);
+		}	
+		else if (rc == RC_NODE_FULL) {
+			BTLeafNode sibling;
+			sibling.read(leafnode.getNextNodePtr(), pf);
+			int siblingKey;
+			if (leafnode.insertAndSplit(key, rid, sibling, siblingKey) == 0) {
+				if ((rc = leafnode.write(rid.pid, pf)) != 0) {
+					return rc;
+				}
+				if ((rc = sibling.write(pf.endPid(), pf)) != 0) {
+					return rc;
+				}
+				return 0;
+			}
+		}
+		else {
+			return rc;
+		}
+	}
+
+	if (insertRecursive(key, rid, curHeight+1) == 0) {
+		BTNonLeafNode node;
+		node.read(rid.pid, pf);
+		rc = node.insert(key, rid.pid);
+
+		if (rc == 0) {	
+			return node.write(rid.pid, pf);
+		}	
+		else if (rc == RC_NODE_FULL) {
+			BTNonLeafNode sibling;
+			int siblingKey;
+			if (node.insertAndSplit(key, rid, sibling, siblingKey) == 0) {
+				if ((rc = node.write(rid.pid, pf)) != 0) {
+					return rc;
+				}
+				if ((rc = sibling.write(pf.endPid(), pf)) != 0) {
+					return rc;
+				}
+				return 0;
+			}
+		}
+		else {
+			return rc;
+		}
+	}
 }
 
 /**
