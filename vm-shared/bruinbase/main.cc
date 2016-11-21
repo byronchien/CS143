@@ -17,22 +17,30 @@
 
 int main()
 {
+	/*
+	BTNonLeafNode node;
+	node.initializeRoot(1,0,2);
+	node.insert();
+	*/
+
+	
 	BTreeIndex btree;
 	RecordId rid;
-	/*for (int i = 0; i < 84; i++) {
-		rid.pid = i;
-		rid.sid = i;
-		btree.insert(i, rid);
-	}*/
+	RC rc;
+
 	rid.pid = 1;
 	rid.sid = 2;
-	btree.insert(0, rid);
+	if ((rc = btree.insert(0, rid)) != 0) {
+		printf("insert\n");
+		printf("%i\n", rc);		
+	}
 
 	IndexCursor cursor;
-	RC rc;
-	if ((rc = btree.locate(0,cursor)) != 0)
-		printf("yo");
-		printf("%i", rc);
+	if ((rc = btree.locate(0, cursor)) != 0) {
+		printf("locate\n");
+		printf("%i\n", rc);		
+	}
+
 
 	BTLeafNode node;
 	node.read(cursor.pid, btree.pf);
@@ -41,6 +49,7 @@ int main()
 	int key;
 	node.readEntry(0, key, rid2);
 	printf("%i %i %i \n", key, rid2.pid, rid2.sid);
+	
 
 /*
 	IndexCursor cursor;

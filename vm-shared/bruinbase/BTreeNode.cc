@@ -372,6 +372,7 @@ RC BTNonLeafNode::locateChildPtr(int searchKey, PageId& pid)
 { 
 	if (searchKey < buffer[0]) {
 		pid = (int) buffer[PageFile::PAGE_SIZE - 4];
+		return 0;
 	}
 
 	int limit = (int) buffer[PageFile::PAGE_SIZE - 8] - 1;
@@ -383,8 +384,8 @@ RC BTNonLeafNode::locateChildPtr(int searchKey, PageId& pid)
 			return 0;
 		}
 	}
-
-	return buffer[limit * 8 + 4];
+	pid = (int) buffer[limit * 8 + 4];
+	return 0;
 }
 
 /*
