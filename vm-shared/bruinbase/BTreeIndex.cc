@@ -97,7 +97,7 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight, int
 {
 	RC rc;
 	char buffer[PageFile::PAGE_SIZE];
-	if ((rc = pf.read(0, (const void*) buffer)) != 0) return rc;
+	if ((rc = pf.read(0, (void*) buffer)) != 0) return rc;
 	treeHeight = (int) buffer[0];
 	// if we are at leaf nodes
 	if(currHeight == treeHeight)
@@ -116,7 +116,7 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight, int
 			int siblingKey;
 			if (leafnode.insertAndSplit(key, rid, sibling, siblingKey) == 0) {
 				if ((rc = leafnode.write(rid.pid, pf)) != 0) return rc;
-				siblingPid = pf.endPid();
+				PageId siblingPid = pf.endPid();
 				if (siblingPid == 0) siblingPid = 1;
 				if ((rc = sibling.write(siblingPid, pf)) != 0) return rc;
 				midKey = siblingKey;
@@ -195,7 +195,7 @@ RC BTreeIndex::locate(int searchKey, IndexCursor& cursor)
 	if ((rc = open("pagefile.txt", 'r')) != 0) return rc;
 
 	char buffer[PageFile::PAGE_SIZE];
-	if ((rc = pf.read(0, (const void*) buffer)) != 0) return rc;
+	if ((rc = pf.read(0, (void*) buffer)) != 0) return rc;
 	treeHeight = (int) buffer[0];
 	rootPid = (int) buffer[4];
 	

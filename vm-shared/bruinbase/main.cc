@@ -20,8 +20,8 @@ int main()
 	BTreeIndex btree;
 	RecordId rid;
 	RC rc;
+
 	
-	/*
 	rid.pid = 1;
 	rid.sid = 2;
 	if ((rc = btree.insert(0, rid)) != 0) {
@@ -42,7 +42,7 @@ int main()
 	int key;
 	node.readEntry(0, key, rid2);
 	printf("%i %i %i \n", key, rid2.pid, rid2.sid);
-	*/
+	
 	
 
 /*
