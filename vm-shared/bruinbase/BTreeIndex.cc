@@ -61,15 +61,20 @@ RC BTreeIndex::insert(int key, const RecordId& rid)
 		BTLeafNode leaf;
 		leaf.insert(key, rid);
 		PageId pid = pf.endPid();
+		if (pid == 0) pid = 1;
 		if ((rc = leaf.write(pid, pf)) != 0) return rc;
 
 		BTNonLeafNode root;
 		if ((rc = root.initializeRoot(-1, key, pid)) != 0) return rc;
 		rootPid = pf.endPid();
+		if (rootPid == 0) rootPid = 1;
 		if ((rc = root.write(rootPid, pf)) != 0) return rc;
 
 		treeHeight = 2;
-
+		char buffer[PageFile::PAGE_SIZE];
+		buffer[0] = treeHeight;
+		buffer[4] = rootPid;
+		if ((rc = pf.write(0, (const void*) buffer)) != 0) return rc;
 		if ((rc = close()) != 0) return rc;
 		return 0;
 	}
@@ -91,6 +96,9 @@ RC BTreeIndex::insert(int key, const RecordId& rid)
 RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight, int& midKey)
 {
 	RC rc;
+	char buffer[PageFile::PAGE_SIZE];
+	if ((rc = pf.read(0, (const void*) buffer)) != 0) return rc;
+	treeHeight = (int) buffer[0];
 	// if we are at leaf nodes
 	if(currHeight == treeHeight)
 	{
@@ -108,7 +116,9 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight, int
 			int siblingKey;
 			if (leafnode.insertAndSplit(key, rid, sibling, siblingKey) == 0) {
 				if ((rc = leafnode.write(rid.pid, pf)) != 0) return rc;
-				if ((rc = sibling.write(pf.endPid(), pf)) != 0) return rc;
+				siblingPid = pf.endPid();
+				if (siblingPid == 0) siblingPid = 1;
+				if ((rc = sibling.write(siblingPid, pf)) != 0) return rc;
 				midKey = siblingKey;
 				return 0;
 			}
@@ -135,13 +145,21 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight, int
 			if (node.insertAndSplit(insertKey, rid.pid, sibling, siblingKey) == 0) {
 				if ((rc = node.write(rid.pid, pf)) != 0) return rc;
 				PageId siblingPid = pf.endPid();
+				if (siblingPid == 0) siblingPid = 1;
 				if ((rc = sibling.write(siblingPid, pf)) != 0) return rc;
 				midKey = siblingKey;
 
 				// check if we need to initializeRoot
 				if (currHeight == 1) {
-					rc = node.initializeRoot(rid.pid , midKey, siblingPid);
+					BTNonLeafNode newroot;
+					rc = newroot.initializeRoot(rid.pid , midKey, siblingPid);
+					rootPid = pf.endPid();
+					if ((rc = newroot.write(rootPid, pf)) != 0) return rc;
 					treeHeight++;
+					char buffer[PageFile::PAGE_SIZE];
+					buffer[0] = (int) treeHeight;
+					buffer[4] = (int) rootPid;
+					if ((rc = pf.write(0, (const void*) buffer)) != 0) return rc;
 				}
 
 				return rc;
@@ -176,6 +194,11 @@ RC BTreeIndex::locate(int searchKey, IndexCursor& cursor)
 	RC rc;
 	if ((rc = open("pagefile.txt", 'r')) != 0) return rc;
 
+	char buffer[PageFile::PAGE_SIZE];
+	if ((rc = pf.read(0, (const void*) buffer)) != 0) return rc;
+	treeHeight = (int) buffer[0];
+	rootPid = (int) buffer[4];
+	
 	PageId pid = rootPid;
 	// find leaf node pid
 	int currHeight = 1;

@@ -17,17 +17,11 @@
 
 int main()
 {
-	/*
-	BTNonLeafNode node;
-	node.initializeRoot(1,0,2);
-	node.insert();
-	*/
-
-	
 	BTreeIndex btree;
 	RecordId rid;
 	RC rc;
-
+	
+	/*
 	rid.pid = 1;
 	rid.sid = 2;
 	if ((rc = btree.insert(0, rid)) != 0) {
@@ -41,7 +35,6 @@ int main()
 		printf("%i\n", rc);		
 	}
 
-
 	BTLeafNode node;
 	node.read(cursor.pid, btree.pf);
 
@@ -49,6 +42,7 @@ int main()
 	int key;
 	node.readEntry(0, key, rid2);
 	printf("%i %i %i \n", key, rid2.pid, rid2.sid);
+	*/
 	
 
 /*
