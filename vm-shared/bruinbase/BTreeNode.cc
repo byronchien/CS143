@@ -188,7 +188,7 @@ RC BTLeafNode::locate(int searchKey, int& eid)
 RC BTLeafNode::readEntry(int eid, int& key, RecordId& rid)
 { 
 	if (eid > getKeyCount()) {
-		return -1;
+		return RC_NO_SUCH_RECORD;
 	} else {
 		void* pointer = buffer + 12 * eid;
 		rid = *(RecordId*) pointer; 

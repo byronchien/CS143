@@ -66,9 +66,11 @@ int main()
 			printf("locate\n");
 			printf("%i\n", rc);		
 		}	
-		node.read(cursor.pid, btree.pf);
-		node.readEntry(0, key2, rid2);
-		printf("%i %i %i \n", key2, rid2.pid, rid2.sid);
+		else {
+			node.read(cursor.pid, btree.pf);
+			node.readEntry(0, key2, rid2);
+			printf("%i %i %i \n", key2, rid2.pid, rid2.sid);			
+		}
 	}
 
 
