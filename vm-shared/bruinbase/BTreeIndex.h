@@ -58,7 +58,8 @@ class BTreeIndex {
    */
   RC insert(int key, const RecordId& rid);
 
-  RC insertRecursive(int key, const RecordId& rid, int currHeight, int& midKey);
+  RC insertRecursive(int key, const RecordId& rid, int currHeight, 
+    int& midKey, PageId insertPid);
 
   /**
    * Run the standard B+Tree key search algorithm and identify the

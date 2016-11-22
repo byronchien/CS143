@@ -1,5 +1,7 @@
 #include "BTreeNode.h"
 
+#include <cstdio>
+
 using namespace std;
 
 BTLeafNode::BTLeafNode()
