@@ -75,6 +75,9 @@ RC BTreeIndex::insert(int key, const RecordId& rid)
 		buffer[4] = rootPid;
 		if ((rc = pf.write(0, (const void*) buffer)) != 0) return rc;
 		//if ((rc = close()) != 0) return rc;
+
+		printf("Page id: %i\n", rid.pid);
+
 		return 0;
 	}
 
@@ -95,6 +98,7 @@ RC BTreeIndex::insert(int key, const RecordId& rid)
 
 RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight, int& midKey)
 {
+
 	RC rc;
 	char buffer[PageFile::PAGE_SIZE];
 	if ((rc = pf.read(0, (void*) buffer)) != 0) return rc;
@@ -107,8 +111,13 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight, int
 		leafnode.read(rid.pid, pf);
 		rc = leafnode.insert(key, rid);
 
+		printf("page id: %i\n", rid.pid);
+
 		if (rc == 0) {	
 			if ((rc = leafnode.write(rid.pid, pf)) != 0) return rc;
+			int key2;
+			RecordId rid2;
+
 			return 0;
 		}	
 		else if (rc == RC_NODE_FULL) {
@@ -130,6 +139,7 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight, int
 	}
 
 	// insert non leaf node to point to new leaf node
+	
 	if (insertRecursive(key, rid, currHeight+1, midKey) == 0 && midKey != -1) {
 		int insertKey = midKey;
 		midKey = -1;

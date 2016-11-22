@@ -17,12 +17,36 @@
 
 int main()
 {
+	/*
+	BTLeafNode node;
+	int key = 5;
+	RecordId rid;
+	rid.pid = 5;
+	rid.sid = 5;
+
+	node.insert(key, rid);
+
+	key = 6;
+	rid.pid = 6;
+	rid.sid = 6;
+	node.insert(key, rid);
+
+	printf("Number of keys: %i\n", node.getKeyCount());
+
+	for (int k = 0; k < node.getKeyCount(); k++)
+	{
+		node.readEntry(k, key, rid);
+		printf("entry: %i %i %i\n", key, rid.pid, rid.sid);
+	}
+	*/
+
+
 	BTreeIndex btree;
 	RecordId rid;
 	RC rc;
 	if ((rc = btree.open("pagefile.txt", 'w')) != 0) return rc;
 
-	/*
+/*
 	rid.pid = 5;
 	rid.sid = 5;
 	int key = 5;
@@ -44,11 +68,11 @@ int main()
 	int key2;
 	node.readEntry(0, key2, rid2);
 	printf("%i %i %i \n", key2, rid2.pid, rid2.sid);
-	*/
+*/
 
 
 	for (int i = 5; i < 7; i++) {
-		rid.pid = i;
+		rid.pid = 2;
 		rid.sid = i;
 		if ((rc = btree.insert(i, rid)) != 0) {
 			printf("insert\n");
@@ -73,12 +97,6 @@ int main()
 		}
 	}
 
-
-
-	
-	
-	
-	
 	if ((rc = btree.close()) != 0) return rc;	
 
 /*
