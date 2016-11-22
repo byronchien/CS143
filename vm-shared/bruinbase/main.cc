@@ -70,7 +70,7 @@ int main()
 	printf("%i %i %i \n", key2, rid2.pid, rid2.sid);
 */
 
-
+/*
 	for (int i = 0; i < 86; i++) {
 		rid.pid = i;
 		rid.sid = i;
@@ -93,11 +93,43 @@ int main()
 			node.read(cursor.pid, btree.pf);
 			node.readEntry(i, key2, rid2);
 			printf("%i %i %i %i \n", i, key2, rid2.pid, rid2.sid);	
-			*/		
+				
 		}
 	}
 
 	if ((rc = btree.close()) != 0) return rc;	
+*/
+
+	BTLeafNode a;
+	BTLeafNode b;
+
+	for (int k = 0; k < 84; k++)
+	{
+		RecordId rid;
+		rid.pid = k;
+		rid.sid = k;
+		a.insert(k, rid);
+	}
+	int key = 84;
+	//RecordId rid;
+	rid.pid = 84;
+	rid.sid = 84;
+	int key2;
+	a.insertAndSplit(key, rid, b, key2);
+
+	for (int k = 0; k < a.getKeyCount(); k++)
+	{
+		a.readEntry(k, key, rid);
+		printf("A Entry: %i %i %i\n", key, rid.pid, rid.sid);
+	}
+
+	for (int k = 0; k < b.getKeyCount(); k++)
+	{
+		b.readEntry(k, key, rid);
+		printf("B Entry: %i %i %i\n", key, rid.pid, rid.sid);
+	}
+
+
 
 /*
 	IndexCursor cursor;
