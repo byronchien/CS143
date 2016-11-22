@@ -54,7 +54,6 @@ RC BTreeIndex::close()
 RC BTreeIndex::insert(int key, const RecordId& rid)
 {
 	RC rc;
-	if ((rc = open("pagefile.txt", 'w')) != 0) return rc;
 
 	// if tree is empty
 	if (rootPid == -1) {
@@ -75,21 +74,22 @@ RC BTreeIndex::insert(int key, const RecordId& rid)
 		buffer[0] = treeHeight;
 		buffer[4] = rootPid;
 		if ((rc = pf.write(0, (const void*) buffer)) != 0) return rc;
-		if ((rc = close()) != 0) return rc;
+		//if ((rc = close()) != 0) return rc;
 		return 0;
 	}
 
-	IndexCursor index;
-
-	if ((rc = locate(key, index)) == RC_NO_SUCH_RECORD) {
+	IndexCursor cursor;
+	if ((rc = locate(key, cursor)) == RC_NO_SUCH_RECORD) {
 		int midKey = -1;
-		if ((rc = close()) != 0) return rc;
-		return this->insertRecursive(key, rid, 1, midKey);
+		if ((rc = this->insertRecursive(key, rid, 1, midKey)) != 0) return rc;
+		//if ((rc = close()) != 0) return rc;
+		return 0;
 	}
 	else {
+		return rc;
 		// duplicate key value
-		if ((rc = close()) != 0) return rc;
-		return -1;
+		//if ((rc = close()) != 0) return rc;
+		//return -1;
 	}
 }
 
@@ -99,6 +99,7 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight, int
 	char buffer[PageFile::PAGE_SIZE];
 	if ((rc = pf.read(0, (void*) buffer)) != 0) return rc;
 	treeHeight = (int) buffer[0];
+
 	// if we are at leaf nodes
 	if(currHeight == treeHeight)
 	{
@@ -192,14 +193,14 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight, int
 RC BTreeIndex::locate(int searchKey, IndexCursor& cursor)
 {
 	RC rc;
-	if ((rc = open("pagefile.txt", 'r')) != 0) return rc;
+	//if ((rc = open("pagefile.txt", 'w')) != 0) return rc;
 
 	char buffer[PageFile::PAGE_SIZE];
 	if ((rc = pf.read(0, (void*) buffer)) != 0) return rc;
 	treeHeight = (int) buffer[0];
 	rootPid = (int) buffer[4];
-	
 	PageId pid = rootPid;
+
 	// find leaf node pid
 	int currHeight = 1;
 	BTNonLeafNode node;
@@ -238,7 +239,7 @@ RC BTreeIndex::locate(int searchKey, IndexCursor& cursor)
 
 	}
 
-	if ((rc = close()) != 0) return rc;
+	//if ((rc = close()) != 0) return rc;
     return 0;
 }
 
