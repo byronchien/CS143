@@ -103,9 +103,6 @@ RC BTreeIndex::insert(int key, const RecordId& rid)
 RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight, 
 	int& midKey, PageId insertPid)
 {
-	int key2;
-	RecordId rid2;
-
 	RC rc;
 	char buffer[PageFile::PAGE_SIZE];
 	if ((rc = pf.read(0, (void*) buffer)) != 0) return rc;
