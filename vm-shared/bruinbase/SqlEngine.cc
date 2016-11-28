@@ -13,6 +13,7 @@
 #include <iostream>
 #include <fstream>
 #include "Bruinbase.h"
+#include "BTreeIndex.h"
 #include "SqlEngine.h"
 
 using namespace std;
@@ -133,7 +134,7 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
 RC SqlEngine::load(const string& table, const string& loadfile, bool index)
 {
   /* Read loadfile with fstream, fgets, etc */
-
+  RC rc;
   string line;
   ifstream fs;
   fs.open(loadfile.c_str(), ios::in);
@@ -142,12 +143,36 @@ RC SqlEngine::load(const string& table, const string& loadfile, bool index)
     string filename = table + ".tbl";
     RecordFile recordfile(filename, 'w');
 
+    BTreeIndex btreeindex;
+    if (index) {
+      string indexFilename = table + ".idx";     
+      if ((rc = btreeindex.open(indexFilename, 'w')) < 0) {
+        fprintf(stderr, "Error: while opening BTreeIndex pagefile");
+        goto exit_select;
+      }
+    }
+
     while (getline (fs, line)) {
       int key;
       string value;
       RecordId recordID;
       parseLoadLine(line, key, value);
       recordfile.append(key, value, recordID);
+
+      if (index) {
+        if ((rc = btreeindex.insert(key, recordID)) < 0) {
+          fprintf(stderr, "Error: while inserting inserting key and recordID pair into BTreeIndex pagefile");
+          btreeindex.close();
+          goto exit_select;         
+        }
+      }
+    }
+
+    if (index) {
+      if ((rc = btreeindex.close()) < 0) {
+        fprintf(stderr, "Error: while closing BTreeIndex pagefile");
+        goto exit_select;       
+      }
     }
 
     fs.close();
@@ -167,6 +192,11 @@ RC SqlEngine::load(const string& table, const string& loadfile, bool index)
       SqlEngine::parseLoadLine(), and insert the tuple to the Record File */
 
   return 0;
+
+  // close the table file and return
+  exit_select:
+  fs.close();
+  return rc;
 }
 
 RC SqlEngine::parseLoadLine(const string& line, int& key, string& value)
