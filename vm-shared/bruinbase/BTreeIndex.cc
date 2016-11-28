@@ -84,7 +84,6 @@ RC BTreeIndex::insert(int key, const RecordId& rid)
 	if ((rc = pf.read(0, (void*) buffer)) != 0) return rc;
 	treeHeight = (int) buffer[0];
 	rootPid = (int) buffer[4];
-
 	IndexCursor cursor;
 	if ((rc = locate(key, cursor)) == RC_NO_SUCH_RECORD) {
 		int midKey = -1;

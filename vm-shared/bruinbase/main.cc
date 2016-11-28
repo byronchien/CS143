@@ -17,6 +17,18 @@
 
 int main()
 {
+	/*RC rc;
+	if ((rc = SqlEngine::load("small", "small.del", true)) < 0) {
+		printf("Load: %i\n", rc);
+	}
+
+ 	std::vector<SelCond> conditions;
+	if ((rc = SqlEngine::select(3, "small", conditions)) < 0) {
+		printf("Select: %i\n", rc);
+	}*/	
+
+
+
 	/*
 	BTLeafNode node;
 	int key = 5;
@@ -40,12 +52,12 @@ int main()
 	}
 	*/
 
-
+/*
 	BTreeIndex btree;
 	RecordId rid;
 	RC rc;
 	if ((rc = btree.open("pagefile.txt", 'w')) != 0) return rc;
-
+*/
 /*
 	rid.pid = 5;
 	rid.sid = 5;
@@ -70,7 +82,7 @@ int main()
 	printf("%i %i %i \n", key2, rid2.pid, rid2.sid);
 */
 
-
+/*
 	for (int i = 0; i <= 100; i++) {
 		rid.pid = i;
 		rid.sid = i;
@@ -83,6 +95,7 @@ int main()
 	BTLeafNode node;
 	RecordId rid2;
 	int key2;
+*/
 	/*
 	for (int i = 0; i <= 84; i++) {
 		if ((rc = btree.locate(i, cursor)) != 0) {
@@ -97,7 +110,8 @@ int main()
 		}
 	}
 	*/
-	if ((rc = btree.close()) != 0) return rc;	
+
+	//if ((rc = btree.close()) != 0) return rc;	
 
 /*
 	BTLeafNode a;
@@ -265,7 +279,7 @@ int main()
 	*/
 	// Testing
   // run the SQL engine taking user commands from standard input (console).
-  //SqlEngine::run(stdin);
+  SqlEngine::run(stdin);
 
 
   return 0;

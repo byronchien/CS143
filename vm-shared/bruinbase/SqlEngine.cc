@@ -215,17 +215,19 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
       // error; upper_limit is less than the lower limit
 
     IndexCursor cursor;
-    index.locate(lower_limit, cursor);
-
+    index.locate(lower_limit, cursor);  
+    printf("%i %i %i\n", cursor.eid, cursor.pid, lower_limit);
     index.readForward(cursor, key, rid);
-
+    printf("%i %i %i %i %i\n", cursor.eid, cursor.pid, key,
+            rid.pid, rid.sid);
     IndexCursor limit_cursor;
     index.locate(upper_limit, limit_cursor);
-
+    printf("%i %i %i\n", limit_cursor.eid, limit_cursor.pid, upper_limit);
     int limit_key;
     RecordId limit_rid;
     index.readForward(limit_cursor, limit_key, limit_rid);
-
+    printf("%i %i %i %i %i\n", limit_cursor.eid, limit_cursor.pid, limit_key, 
+            limit_rid.pid, limit_rid.sid);
     while(rid != limit_rid)
     {
       // read the tuple
@@ -326,7 +328,7 @@ RC SqlEngine::load(const string& table, const string& loadfile, bool index)
     if (index) {
       string indexFilename = table + ".idx";     
       if ((rc = btreeindex.open(indexFilename, 'w')) < 0) {
-        fprintf(stderr, "Error: while opening BTreeIndex pagefile");
+        fprintf(stderr, "Error: while opening BTreeIndex pagefile\n");
         goto exit_select;
       }
     }
@@ -337,19 +339,20 @@ RC SqlEngine::load(const string& table, const string& loadfile, bool index)
       RecordId recordID;
       parseLoadLine(line, key, value);
       recordfile.append(key, value, recordID);
-
+      
       if (index) {
         if ((rc = btreeindex.insert(key, recordID)) < 0) {
-          fprintf(stderr, "Error: while inserting inserting key and recordID pair into BTreeIndex pagefile");
+          fprintf(stderr, "Error: while inserting inserting key and recordID pair into BTreeIndex pagefile\n");
           btreeindex.close();
           goto exit_select;         
         }
       }
+      
     }
 
     if (index) {
       if ((rc = btreeindex.close()) < 0) {
-        fprintf(stderr, "Error: while closing BTreeIndex pagefile");
+        fprintf(stderr, "Error: while closing BTreeIndex pagefile\n");
         goto exit_select;       
       }
     }
