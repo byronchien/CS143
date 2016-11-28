@@ -66,7 +66,7 @@ RC BTreeIndex::insert(int key, const RecordId& rid)
 		if ((rc = leaf.write(pid, pf)) != 0) return rc;
 
 		BTNonLeafNode root;
-		if ((rc = root.initializeRoot(-1, key, pid)) != 0) return rc;
+		if ((rc = root.initializeRoot(pid, key, pid)) != 0) return rc;
 		rootPid = pf.endPid();
 		if (rootPid == 0) rootPid = 1;
 		if ((rc = root.write(rootPid, pf)) != 0) return rc;

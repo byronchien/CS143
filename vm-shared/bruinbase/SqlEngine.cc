@@ -215,7 +215,7 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
       // error; upper_limit is less than the lower limit
 
     IndexCursor cursor;
-    index.locate(lower_limit, cursor);  
+    index.locate(1, cursor);  
     printf("%i %i %i\n", cursor.eid, cursor.pid, lower_limit);
     index.readForward(cursor, key, rid);
     printf("%i %i %i %i %i\n", cursor.eid, cursor.pid, key,

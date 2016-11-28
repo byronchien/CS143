@@ -386,6 +386,7 @@ RC BTNonLeafNode::locateChildPtr(int searchKey, PageId& pid)
 			return 0;
 		}
 	}
+
 	pid = (int) buffer[limit * 8 + 4];
 	return 0;
 }
