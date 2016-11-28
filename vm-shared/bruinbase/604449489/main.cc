@@ -17,7 +17,7 @@
 
 int main()
 {
-	
+	/*
 	int key;
 	RecordId rid;
 		
@@ -37,6 +37,7 @@ int main()
 		printf("Entry %i: %i %i %i\n", k, key, rid.pid, rid.sid);
 	}
 
+*/
 	/*RC rc;
 	if ((rc = SqlEngine::load("small", "small.del", true)) < 0) {
 		printf("Load: %i\n", rc);
@@ -299,7 +300,7 @@ int main()
 	*/
 	// Testing
   // run the SQL engine taking user commands from standard input (console).
-  //SqlEngine::run(stdin);
+  SqlEngine::run(stdin);
 
 
   return 0;
