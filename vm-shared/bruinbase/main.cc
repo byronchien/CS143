@@ -17,7 +17,7 @@
 
 int main()
 {
-	
+	/*
 	int key;
 	RecordId rid;
 		
@@ -36,7 +36,7 @@ int main()
 		node.readEntry(k, key, rid);
 		printf("Entry %i: %i %i %i\n", k, key, rid.pid, rid.sid);
 	}
-
+	*/
 	/*RC rc;
 	if ((rc = SqlEngine::load("small", "small.del", true)) < 0) {
 		printf("Load: %i\n", rc);
@@ -72,13 +72,13 @@ int main()
 	}
 	*/
 
-/*
+
 	BTreeIndex btree;
 	RecordId rid;
 	RC rc;
 	if ((rc = btree.open("pagefile.txt", 'w')) != 0) return rc;
-*/
-/*
+
+	/*
 	rid.pid = 5;
 	rid.sid = 5;
 	int key = 5;
@@ -100,9 +100,9 @@ int main()
 	int key2;
 	node.readEntry(0, key2, rid2);
 	printf("%i %i %i \n", key2, rid2.pid, rid2.sid);
-*/
+	*/
 
-/*
+
 	for (int i = 0; i <= 100; i++) {
 		rid.pid = i;
 		rid.sid = i;
@@ -115,7 +115,7 @@ int main()
 	BTLeafNode node;
 	RecordId rid2;
 	int key2;
-*/
+
 	/*
 	for (int i = 0; i <= 84; i++) {
 		if ((rc = btree.locate(i, cursor)) != 0) {
@@ -131,7 +131,7 @@ int main()
 	}
 	*/
 
-	//if ((rc = btree.close()) != 0) return rc;	
+	if ((rc = btree.close()) != 0) return rc;	
 
 /*
 	BTLeafNode a;
