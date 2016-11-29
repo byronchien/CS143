@@ -515,6 +515,14 @@ RC BTNonLeafNode::insertAndSplit(int key, PageId pid, BTNonLeafNode& sibling,
  */
 RC BTNonLeafNode::locateChildPtr(int searchKey, PageId& pid)
 { 
+	int temp;
+	for (int i = 0; i < getKeyCount(); i++) {
+		charToInt(buffer + i * 8, temp);
+		printf("key %i: %i\n", i, temp);
+	}
+
+
+
 	int key;
 	charToInt(buffer, key);
 	if (searchKey < key) {
@@ -525,9 +533,11 @@ RC BTNonLeafNode::locateChildPtr(int searchKey, PageId& pid)
 	}
 
 //	int limit = (int) buffer[PageFile::PAGE_SIZE - 8] - 1;
-	int limit;
+	int limit = getKeyCount() - 1;
+	/*
 	charToInt(buffer + PageFile::PAGE_SIZE - 8, limit);
 	limit--;
+	*/
 
 	for (int i = 0; i < limit; i++)
 	{
