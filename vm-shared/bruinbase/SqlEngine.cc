@@ -65,7 +65,7 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
     while (rid < rf.endRid()) {
       // read the tuple
       if ((rc = rf.read(rid, key, value)) < 0) {
-        fprintf(stderr, "Error: while reading a tuple from table %s\n", table.c_str());
+        fprintf(stderr, "Error2: while reading a tuple from table %s\n", table.c_str());
         goto exit_select;
       }
 
@@ -221,6 +221,7 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
     index.readForward(cursor, key, rid);
     //printf("%i %i %i %i %i\n", cursor.eid, cursor.pid, key,
     //        rid.pid, rid.sid);
+
     IndexCursor limit_cursor;
     index.locate(upper_limit, limit_cursor);
     //printf("%i %i %i\n", limit_cursor.eid, limit_cursor.pid, upper_limit);
@@ -229,6 +230,16 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
     index.readForward(limit_cursor, limit_key, limit_rid);
     //printf("%i %i %i %i %i\n", limit_cursor.eid, limit_cursor.pid, limit_key, 
     //        limit_rid.pid, limit_rid.sid);
+
+    if (equal_check) {
+      index.locate(equal_num, cursor);
+      index.readForward(cursor, key, rid);
+
+      index.locate(equal_num + 1, limit_cursor);
+      index.readForward(limit_cursor, limit_key, limit_rid);
+    }
+
+
 
     while(key != limit_key)
     {
