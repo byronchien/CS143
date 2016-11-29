@@ -113,7 +113,8 @@ RC BTreeIndex::insert(int key, const RecordId& rid)
  	}
 	*/
 	IndexCursor cursor;
-	if ((rc = locate(key, cursor)) == RC_NO_SUCH_RECORD) {
+	rc = locate(key, cursor);
+	if (rc == RC_NO_SUCH_RECORD || rc == RC_END_OF_TREE) {
 		//printf("located %i %i %i \n", key, rid.pid, rid.sid);
 		int midKey = -1;
 		if ((rc = this->insertRecursive(key, rid, 1, midKey, rootPid)) != 0) return rc;
@@ -139,6 +140,7 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight,
 
 	//int key2;
 	//RecordId rid2;
+
 	//printf("%i %i %i\n", key, rid.pid, rid.sid);
 	/*
 	if (key == 19901234) {
@@ -197,10 +199,10 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight,
 					printf("%i %i %i %i \n", i, key2, rid2.pid, rid2.sid);
 				}
 				*/
-
 				
 				// initialize first root
 				if (treeHeight == 1) {
+					printf("%i %i\n", midKey, siblingPid);
 					BTNonLeafNode newroot;
 					rc = newroot.initializeRoot(insertPid, midKey, siblingPid);
 					rootPid = pf.endPid();
@@ -226,7 +228,7 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight,
 	if ((rc = node.locateChildPtr(key, childPid)) != 0) return rc;
 	if (insertRecursive(key, rid, currHeight+1, midKey, childPid) == 0 && 
 						midKey != -1) {
-		// insert non leaf node to point to new leaf node after split
+		// insert into non leaf node to point to new leaf node after split
 		int insertKey = midKey;
 		midKey = -1;
 		rc = node.insert(insertKey, childPid);
@@ -357,21 +359,21 @@ RC BTreeIndex::readForward(IndexCursor& cursor, int& key, RecordId& rid)
 {
 	BTLeafNode node;
 	RC rc;
-
+	//printf("eid: %i ", cursor.eid);
 	if ((rc = node.read(cursor.pid, pf)) < 0) return rc;
 	if ((rc = node.readEntry(cursor.eid, key, rid)) < 0) return rc;
 
-	if (cursor.eid != node.getKeyCount()) {
+	if (cursor.eid != node.getKeyCount() - 1) {
 		cursor.eid++;
 	} else {
 		if (node.getNextNodePtr() != -1) {
 			cursor.eid = 0;
 			cursor.pid = node.getNextNodePtr();
 		} else {
-			return RC_NO_SUCH_RECORD;
-			//return RC_END_OF_TREE;
+			//return RC_NO_SUCH_RECORD;
+			return RC_END_OF_TREE;
 		}
 	}
-
+	
     return 0;
 }

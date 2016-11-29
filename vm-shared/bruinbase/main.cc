@@ -54,13 +54,14 @@ int main()
 		printf("entry: %i %i %i\n", key, rid.pid, rid.sid);
 	}
 	*/
-/*
 
+	/*
 	BTreeIndex btree;
 	RecordId rid;
 	RC rc;
 	if ((rc = btree.open("pagefile.txt", 'w')) != 0) return rc;
-*/
+	*/
+
 	/*
 	rid.pid = 5;
 	rid.sid = 5;
@@ -85,15 +86,24 @@ int main()
 	printf("%i %i %i \n", key2, rid2.pid, rid2.sid);
 	*/
 
-/*
-	for (int i = 200; i <= 300; i++) {
+	/*
+	for (int i = 200; i <= 284; i++) {
 		rid.pid = i;
 		rid.sid = i;
 		if ((rc = btree.insert(rand() % 5000, rid)) != 0) {
 			printf("insert %i\n", rc);
 		}
 	}
-
+	*/
+	/*
+	for (int i = 0; i <= 84; i++) {
+		rid.pid = i;
+		rid.sid = i;
+		if ((rc = btree.insert(i, rid)) != 0) {
+			printf("insert %i\n", rc);
+		}
+	}
+	
 	IndexCursor cursor;
 	BTLeafNode node;
 	RecordId rid2;
@@ -103,12 +113,14 @@ int main()
 	rc = 0;
 	while( rc == 0) {
 		//node.readEntry(k, key2, rid2);
-		rc = btree.readForward(cursor, key2, rid2);
-		printf("Entry %i: %i %i %i\n", k, key2, rid2.pid, rid2.sid);
+		if ((rc = btree.readForward(cursor, key2, rid2)) == 0) {
+			printf("Entry %i: %i %i %i\n", k, key2, rid2.pid, rid2.sid);
+		}
 		k++;
 	}
+	*/
 
-*/
+
 	/*
 	for (int i = 0; i <= 84; i++) {
 		if ((rc = btree.locate(i, cursor)) != 0) {

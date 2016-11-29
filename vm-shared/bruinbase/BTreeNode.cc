@@ -176,7 +176,7 @@ RC BTLeafNode::insertAndSplit(int key, const RecordId& rid,
 //		buffer[PageFile::PAGE_SIZE - 8] = 42;
 		intToChar(42, buffer + PageFile::PAGE_SIZE - 8);
 //		sibling.buffer[PageFile::PAGE_SIZE - 8] = 42;
-		intToChar(42, buffer + PageFile::PAGE_SIZE - 8);
+		intToChar(42, sibling.buffer + PageFile::PAGE_SIZE - 8);
 		insert(key, rid);
 
 //		siblingKey = (int) sibling.buffer[0];
@@ -194,11 +194,11 @@ RC BTLeafNode::insertAndSplit(int key, const RecordId& rid,
 //		buffer[PageFile::PAGE_SIZE - 8] = 43;
 //		sibling.buffer[PageFile::PAGE_SIZE - 8] = 41;
 		intToChar(43, buffer + PageFile::PAGE_SIZE - 8);
-		intToChar(41, buffer + PageFile::PAGE_SIZE - 8);
+		intToChar(41, sibling.buffer + PageFile::PAGE_SIZE - 8);
 		sibling.insert(key, rid);
 
 //		siblingKey = (int) sibling.buffer[0];
-		charToInt(sibling.buffer, siblingKey);
+		charToInt(sibling.buffer + 8, siblingKey);
 		return 0;
 	}
 }

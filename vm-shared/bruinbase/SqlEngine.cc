@@ -41,6 +41,7 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
   RecordId   rid;  // record cursor for table scanning
 
   RC     rc;
+  RC     readForwardrc;
   int    key;     
   string value;
   int    count;
@@ -303,8 +304,11 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
 
       // move to the next tuple
       next_tuple2:
-      rc = index.readForward(cursor, key, rid);
-      if (rc < 0) break;
+      if (readForwardrc == RC_END_OF_TREE) {
+        break;
+      }
+      readForwardrc = index.readForward(cursor, key, rid);
+      
     }
 
     // print matching tuple count if "select count(*)"
