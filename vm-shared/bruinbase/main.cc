@@ -18,17 +18,18 @@
 
 int main()
 {
-	
-	/*RC rc;
-	if ((rc = SqlEngine::load("small", "small.del", true)) < 0) {
+	/*
+	RC rc;
+	if ((rc = SqlEngine::load("xlarge", "xlarge.del", true)) < 0) {
 		printf("Load: %i\n", rc);
 	}
-
+	*/
+	/*
  	std::vector<SelCond> conditions;
 	if ((rc = SqlEngine::select(3, "small", conditions)) < 0) {
 		printf("Select: %i\n", rc);
-	}*/	
-
+	}	
+	*/
 
 
 	/*

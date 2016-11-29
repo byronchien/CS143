@@ -354,7 +354,7 @@ RC BTNonLeafNode::read(PageId pid, const PageFile& pf)
  * @return 0 if successful. Return an error code if there is an error.
  */
 RC BTNonLeafNode::write(PageId pid, PageFile& pf)
-{ 	
+{
 	if (pid >= 0) {
 		return pf.write(pid, (const void*) buffer);
 	} else {

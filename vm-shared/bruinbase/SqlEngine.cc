@@ -344,7 +344,9 @@ RC SqlEngine::load(const string& table, const string& loadfile, bool index)
       recordfile.append(key, value, recordID);
       
       if (index) {
+        //printf("%i %i %i\n", key, recordID.pid, recordID.sid);
         if ((rc = btreeindex.insert(key, recordID)) < 0) {
+          //printf("%i %i %i error\n", key, recordID.pid, recordID.sid);
           fprintf(stderr, "Error: while inserting inserting key and recordID pair into BTreeIndex pagefile\n");
           btreeindex.close();
           goto exit_select;         
