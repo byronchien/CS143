@@ -18,8 +18,42 @@
 
 int main()
 {
-	/*
+	
 	RC rc;
+
+	BTreeIndex btree;
+	RecordId rid;	
+	if ((rc = btree.open("pagefile.txt", 'w')) != 0) return rc;
+	
+	for (int i = 1; i <= 1000; i++) {
+		rid.pid = i;
+		rid.sid = i;
+		if ((rc = btree.insert(rand() % 5000, rid)) != 0) {
+			printf("insert %i\n", rc);
+		}
+	}
+	
+	IndexCursor cursor;
+	BTLeafNode node;
+	RecordId rid2;
+	int key2;
+	int k = 0;
+	btree.locate(0, cursor);
+	rc = 0;
+	while( rc == 0) {
+		//node.readEntry(k, key2, rid2);
+		rc = btree.readForward(cursor, key2, rid2);
+		if (rc == 0 || rc == RC_END_OF_TREE) {
+			printf("Entry %i: %i %i %i\n", k, key2, rid2.pid, rid2.sid);
+		}
+		k++;
+	}
+	
+	if ((rc = btree.close()) != 0) return rc;	
+	
+
+
+	/*
 	if ((rc = SqlEngine::load("medium", "medium.del", true)) < 0) {
 		printf("Load: %i\n", rc);
 	}
@@ -30,6 +64,11 @@ int main()
 		printf("Select: %i\n", rc);
 	}	
 	
+
+
+
+
+
 
 
 	/*
@@ -55,12 +94,9 @@ int main()
 	}
 	*/
 
-	/*
-	BTreeIndex btree;
-	RecordId rid;
-	RC rc;
-	if ((rc = btree.open("pagefile.txt", 'w')) != 0) return rc;
-	*/
+	
+
+	
 
 	/*
 	rid.pid = 5;
@@ -95,32 +131,7 @@ int main()
 		}
 	}
 	*/
-	/*
-	for (int i = 1; i <= 100; i++) {
-		rid.pid = i;
-		rid.sid = i;
-		if ((rc = btree.insert(i, rid)) != 0) {
-			printf("insert %i\n", rc);
-		}
-	}
-	*/
-	/*
-	IndexCursor cursor;
-	BTLeafNode node;
-	RecordId rid2;
-	int key2;
-	int k = 0;
-	btree.locate(0, cursor);
-	rc = 0;
-	while( rc == 0) {
-		//node.readEntry(k, key2, rid2);
-		rc = btree.readForward(cursor, key2, rid2);
-		if (rc == 0 || rc == RC_END_OF_TREE) {
-			printf("Entry %i: %i %i %i\n", k, key2, rid2.pid, rid2.sid);
-		}
-		k++;
-	}
-	*/
+
 
 
 	/*
@@ -138,7 +149,7 @@ int main()
 	}
 	*/
 
-//	if ((rc = btree.close()) != 0) return rc;	
+
 
 /*
 	BTLeafNode a;
@@ -306,7 +317,7 @@ int main()
 	*/
 	// Testing
   // run the SQL engine taking user commands from standard input (console).
-  SqlEngine::run(stdin);
+  //SqlEngine::run(stdin);
 
 
   return 0;
