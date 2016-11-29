@@ -9,7 +9,8 @@
  
 #include "BTreeIndex.h"
 #include "BTreeNode.h"
-#include <string>
+#include "conversion.h"
+
 #include <cstdio>
 
 using namespace std;
@@ -67,8 +68,12 @@ RC BTreeIndex::insert(int key, const RecordId& rid)
 
 		treeHeight = 1;
 		char buffer[PageFile::PAGE_SIZE];
+		intToChar(treeHeight, buffer);
+		intToChar(rootPid, buffer + 4);
+		/*
 		buffer[0] = (int) treeHeight;
 		buffer[4] = (int) rootPid;
+		*/
 		if ((rc = pf.write(0, (const void*) buffer)) != 0) return rc;
 
 		return 0;
@@ -98,8 +103,12 @@ RC BTreeIndex::insert(int key, const RecordId& rid)
 	
 	char buffer[PageFile::PAGE_SIZE];
 	if ((rc = pf.read(0, (void*) buffer)) != 0) return rc;
+	charToInt(buffer, treeHeight);
+	charToInt(buffer + 4, rootPid);
+	/*
 	treeHeight = (int) buffer[0];
 	rootPid = (int) buffer[4];
+	*/
 	IndexCursor cursor;
 	if ((rc = locate(key, cursor)) == RC_NO_SUCH_RECORD) {
 		//printf("%i %i %i \n", key, rid.pid, rid.sid);
@@ -122,7 +131,8 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight,
 	RC rc;
 	char buffer[PageFile::PAGE_SIZE];
 	if ((rc = pf.read(0, (void*) buffer)) != 0) return rc;
-	treeHeight = (int) buffer[0];
+	charToInt(buffer, treeHeight);
+	//treeHeight = (int) buffer[0];
 
 	//int key2;
 	//RecordId rid2;
@@ -189,8 +199,12 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight,
 					if ((rc = newroot.write(rootPid, pf)) != 0) return rc;
 					treeHeight++;
 					char buffer[PageFile::PAGE_SIZE];
+					intToChar(treeHeight, buffer);
+					intToChar(rootPid, buffer + 4);
+					/*
 					buffer[0] = (int) treeHeight;
 					buffer[4] = (int) rootPid;
+					*/
 					if ((rc = pf.write(0, (const void*) buffer)) != 0) return rc;
 				}
 
@@ -233,8 +247,12 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight,
 					if ((rc = newroot.write(rootPid, pf)) != 0) return rc;
 					treeHeight++;
 					char buffer[PageFile::PAGE_SIZE];
+					intToChar(treeHeight, buffer);
+					intToChar(rootPid, buffer + 4);
+					/*
 					buffer[0] = (int) treeHeight;
 					buffer[4] = (int) rootPid;
+					*/
 					if ((rc = pf.write(0, (const void*) buffer)) != 0) return rc;
 				}
 
@@ -271,8 +289,12 @@ RC BTreeIndex::locate(int searchKey, IndexCursor& cursor)
 	
 	char buffer[PageFile::PAGE_SIZE];
 	if ((rc = pf.read(0, (void*) buffer)) != 0) return rc;
+	charToInt(buffer, treeHeight);
+	charToInt(buffer + 4, rootPid);
+	/*
 	treeHeight = (int) buffer[0];
 	rootPid = (int) buffer[4];
+	*/
 	PageId pid = rootPid;
 
 	// find leaf node pid
