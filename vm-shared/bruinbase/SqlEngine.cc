@@ -56,7 +56,7 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
 
   BTreeIndex index;
   rc = index.open(index_name, 'r');
-
+  count = 0;
   if (rc < 0) {
     // index doesn't exist; search normally
     // scan the table file from the beginning

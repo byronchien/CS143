@@ -1,10 +1,9 @@
 #include "BTreeNode.h"
 #include <bitset>
 #include <cstdio>
-#include "conversion.h"
 
 using namespace std;
-/*
+
 RC intToChar(int n, char* buffer)
 {
 	buffer[0] = n & (unsigned) 255;
@@ -35,7 +34,7 @@ RC charToInt(char* buffer, int& n)
 
 	return 0;
 }
-*/
+
 BTLeafNode::BTLeafNode()
 {
 	for (int i = 0; i < 1024; i++)

@@ -1,7 +1,6 @@
 #ifndef CONVERSION_H
 #define CONVERSION_H
 
-
 RC intToChar(int n, char* buffer)
 {
 	buffer[0] = n & (unsigned) 255;

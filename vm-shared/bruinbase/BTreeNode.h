@@ -12,6 +12,10 @@
 
 #include "RecordFile.h"
 #include "PageFile.h"
+
+RC intToChar(int n, char* buffer);
+RC charToInt(char* buffer, int& n);
+
 /**
  * BTLeafNode: The class representing a B+tree leaf node.
  */
