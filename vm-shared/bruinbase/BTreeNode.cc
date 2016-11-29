@@ -520,6 +520,7 @@ RC BTNonLeafNode::locateChildPtr(int searchKey, PageId& pid)
 	if (searchKey < key) {
 //		pid = (int) buffer[PageFile::PAGE_SIZE - 4];
 		charToInt(buffer + PageFile::PAGE_SIZE - 4, pid);
+		printf("searchKey < key %i %i\n", searchKey, key);
 		return 0;
 	}
 
@@ -536,12 +537,14 @@ RC BTNonLeafNode::locateChildPtr(int searchKey, PageId& pid)
 		if (x == searchKey || (x < searchKey && y > searchKey)) {
 //			pid = (int) buffer[i * 8 + 4];
 			charToInt(buffer + i * 8 + 4, pid);
+			printf("x < searchKey < y %i %i %i\n", x, searchKey, y);
 			return 0;
 		}
 	}
 
 //	pid = (int) buffer[limit * 8 + 4];
 	charToInt(buffer + limit * 8 + 4, pid);
+	printf("searchKey > all %i\n", searchKey);
 	return 0;
 }
 
