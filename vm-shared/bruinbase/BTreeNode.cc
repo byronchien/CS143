@@ -1,9 +1,41 @@
 #include "BTreeNode.h"
 #include <bitset>
 #include <cstdio>
+#include "conversion.h"
 
 using namespace std;
+/*
+RC intToChar(int n, char* buffer)
+{
+	buffer[0] = n & (unsigned) 255;
+	buffer[1] = (n >> 8) & (unsigned) 255;
+	buffer[2] = (n >> 16) & (unsigned) 255;
+	buffer[3] = (n >> 24) & (unsigned) 255;
 
+//	printf("%i %i %i %i\n", buffer[0], buffer[1], buffer[2], buffer[3]);
+
+	return 0;
+}
+
+RC charToInt(char* buffer, int& n)
+{
+	int x = 0;
+
+	x |= (unsigned char) buffer[3];
+	x = x << 8;
+	x |= (unsigned char) buffer[2];
+	x = x << 8;
+	x = x | (unsigned char) buffer[1];
+	x = x << 8;
+	x = x | (unsigned char) buffer[0];	
+
+	n = x;
+	
+//	printf("%i\n", x);
+
+	return 0;
+}
+*/
 BTLeafNode::BTLeafNode()
 {
 	for (int i = 0; i < 1024; i++)
@@ -11,7 +43,10 @@ BTLeafNode::BTLeafNode()
 		buffer[i] = 0;
 	}
 
-	buffer[PageFile::PAGE_SIZE - 4] = -1;
+//	buffer[PageFile::PAGE_SIZE - 4] = -1;
+	int k = -1;
+	intToChar(k, buffer + PageFile::PAGE_SIZE - 4);
+
 }
 
 /*
@@ -50,7 +85,10 @@ RC BTLeafNode::write(PageId pid, PageFile& pf)
  */
 int BTLeafNode::getKeyCount()
 { 
-	return (int) buffer[PageFile::PAGE_SIZE - 8];
+//	return (int) buffer[PageFile::PAGE_SIZE - 8];
+	int k;
+	charToInt(buffer + PageFile::PAGE_SIZE - 8, k);
+	return k;
 }
 
 /*
@@ -74,16 +112,33 @@ RC BTLeafNode::insert(int key, const RecordId& rid)
 		for (int i = getKeyCount(); i > index; i--)
 		{
 			int k = i-1;
+
+			for (int j = 0; j < 12; j++)
+			{
+				buffer[i * 12 + j] = buffer[k * 12 + j];
+			}
+/*
 			buffer[i * 12 + 8] = (int) buffer[k * 12 + 8];
 			buffer[i * 12 + 4] = (int) buffer[k * 12 + 4];
 			buffer[i * 12] = (int) buffer[k * 12];
+*/
 		}
 
+		RecordId rid2 = rid;
 
-		buffer[index * 12] = rid.pid;
-		buffer[index * 12 + 4] = rid.sid;
-		buffer[index * 12 + 8] = key;
-		buffer[PageFile::PAGE_SIZE - 8]++;
+//		buffer[index * 12] = rid.pid;
+		intToChar(rid2.pid, buffer + index * 12);
+//		buffer[index * 12 + 4] = rid.sid;
+		intToChar(rid2.sid, buffer + index * 12 + 4);
+//		buffer[index * 12 + 8] = key;
+		intToChar(key, buffer + index * 12 + 8);
+		
+		int keys;
+		charToInt(buffer + PageFile::PAGE_SIZE - 8, keys);
+		keys++;
+		intToChar(keys, buffer + PageFile::PAGE_SIZE - 8);
+//		buffer[PageFile::PAGE_SIZE - 8]++;
+
 
 		return 0;
 	}
@@ -109,30 +164,42 @@ RC BTLeafNode::insertAndSplit(int key, const RecordId& rid,
 	RecordId middlerid;
 	readEntry(42, middlekey, middlerid);
 
+	int temp;
+
 	if (middlekey > key) {
 		for (int i = 0; i < 42 * 12; i += 4)
 		{
-			sibling.buffer[i] = (int) buffer[i + 42 * 12];
+//			sibling.buffer[i] = (int) buffer[i + 42 * 12];
+			charToInt(buffer + i + 42 * 12, temp);
+			intToChar(temp, sibling.buffer + i);
 		}
 
-		buffer[PageFile::PAGE_SIZE - 8] = 42;
-		sibling.buffer[PageFile::PAGE_SIZE - 8] = 42;
+//		buffer[PageFile::PAGE_SIZE - 8] = 42;
+		intToChar(42, buffer + PageFile::PAGE_SIZE - 8);
+//		sibling.buffer[PageFile::PAGE_SIZE - 8] = 42;
+		intToChar(42, buffer + PageFile::PAGE_SIZE - 8);
 		insert(key, rid);
 
-		siblingKey = (int) sibling.buffer[0];
+//		siblingKey = (int) sibling.buffer[0];
+		charToInt(sibling.buffer, siblingKey);
 		return 0;
 
 	} else {
 		for (int i = 0; i < 41 * 12; i += 4)
 		{
-			sibling.buffer[i] = (int) buffer[i + 43 * 12];
+//			sibling.buffer[i] = (int) buffer[i + 43 * 12];
+			charToInt(buffer + i + 43 * 12, temp);
+			intToChar(temp, sibling.buffer + i);
 		}
 
-		buffer[PageFile::PAGE_SIZE - 8] = 43;
-		sibling.buffer[PageFile::PAGE_SIZE - 8] = 41;
+//		buffer[PageFile::PAGE_SIZE - 8] = 43;
+//		sibling.buffer[PageFile::PAGE_SIZE - 8] = 41;
+		intToChar(43, buffer + PageFile::PAGE_SIZE - 8);
+		intToChar(41, buffer + PageFile::PAGE_SIZE - 8);
 		sibling.insert(key, rid);
 
-		siblingKey = (int) sibling.buffer[0];
+//		siblingKey = (int) sibling.buffer[0];
+		charToInt(sibling.buffer, siblingKey);
 		return 0;
 	}
 }
@@ -153,7 +220,10 @@ RC BTLeafNode::locate(int searchKey, int& eid)
 	/**
 	 * Search through the node sequentially
 	 */
-	int limit = (int) buffer[PageFile::PAGE_SIZE - 8];
+//	int limit = (int) buffer[PageFile::PAGE_SIZE - 8];
+
+	int limit;
+	charToInt(buffer + PageFile::PAGE_SIZE - 8, limit);
 
 	if (limit == 0)
 	{
@@ -163,12 +233,15 @@ RC BTLeafNode::locate(int searchKey, int& eid)
 	for (int i = 0; i < limit; i++)
 	{
 
-		if ((int) buffer[i * 12 + 8] == searchKey) {
+		int curr;
+		charToInt(buffer + i * 12 + 8, curr);
+
+		if (curr == searchKey) {
 			eid = i;
 			return 0;
 		}
 
-		if ((int) buffer[i * 12 + 8] > searchKey) {
+		if (curr > searchKey) {
 			eid = i - 1;
 
 			return RC_NO_SUCH_RECORD;
@@ -192,11 +265,14 @@ RC BTLeafNode::readEntry(int eid, int& key, RecordId& rid)
 	if (eid > getKeyCount()) {
 		return RC_NO_SUCH_RECORD;
 	} else {
-		void* pointer = buffer + 12 * eid;
-		rid = *(RecordId*) pointer; 
+		char* pointer = buffer + 12 * eid;
+//		rid = *(RecordId*) pointer; 
 		//rid = (RecordId) buffer[12 * eid];
 
-		key = (int) buffer[12 * eid + 8];
+//		key = (int) buffer[12 * eid + 8];
+		charToInt(pointer, rid.pid);
+		charToInt(pointer + 4, rid.sid);
+		charToInt(pointer + 8, key);
 /*
 		bitset<32> temp;
 
@@ -226,7 +302,9 @@ RC BTLeafNode::readEntry(int eid, int& key, RecordId& rid)
  */
 PageId BTLeafNode::getNextNodePtr()
 { 
-	return (PageId) buffer[PageFile::PAGE_SIZE - 4]; 
+	PageId temp;
+	charToInt(buffer + PageFile::PAGE_SIZE - 4, temp);
+	return temp;
 }
 
 /*
@@ -237,7 +315,8 @@ PageId BTLeafNode::getNextNodePtr()
 RC BTLeafNode::setNextNodePtr(PageId pid)
 { 
 	if (pid >= 0) {
-		buffer[PageFile::PAGE_SIZE - 4] = pid;
+		intToChar(pid, buffer + PageFile::PAGE_SIZE - 4);
+//		buffer[PageFile::PAGE_SIZE - 4] = pid;
 		return 0; 
 	} else {
 		return -1;
@@ -246,7 +325,12 @@ RC BTLeafNode::setNextNodePtr(PageId pid)
 
 BTNonLeafNode::BTNonLeafNode()
 { 
-	buffer[PageFile::PAGE_SIZE - 8] = 0;
+	for (int i = 0; i < 1024; i++)
+	{
+		buffer[i] = 0;
+	}
+
+	intToChar(0, buffer + PageFile::PAGE_SIZE - 8);
 }
 
 /*
@@ -285,7 +369,10 @@ RC BTNonLeafNode::write(PageId pid, PageFile& pf)
  */
 int BTNonLeafNode::getKeyCount()
 { 	
-	return (int) buffer[PageFile::PAGE_SIZE - 8];
+	int keys;
+	charToInt(buffer + PageFile::PAGE_SIZE - 8, keys);	
+//	return (int) buffer[PageFile::PAGE_SIZE - 8];
+	return keys;
 }
 
 /*
@@ -304,17 +391,30 @@ RC BTNonLeafNode::insert(int key, PageId pid)
 	}
 	else {
 		int k = getKeyCount() * 8;
+		int limit;
+		charToInt(buffer + k - 8, limit);
 
-		for (int i = k; i != 0 && buffer[i - 8] > key; i -= 8)
+		int temp;
+		for (int i = k; i != 0 && limit > key; i -= 8)
 		{
 			k = i-8;
-			buffer[i + 4] = (PageId) buffer[k + 4];
-			buffer[i] = (int) buffer[k];
+//			buffer[i + 4] = (PageId) buffer[k + 4];
+			charToInt(buffer + k + 4, temp);
+			intToChar(temp, buffer + i + 4);
+//			buffer[i] = (int) buffer[k];
+			charToInt(buffer + k, temp);
+			intToChar(temp, buffer + i);
+
+			charToInt(buffer + i - 8, limit);
 		}
 
-		buffer[k] = key;
-		buffer[k + 4] = pid;
-		buffer[PageFile::PAGE_SIZE - 8]++;
+//		buffer[k] = key;
+		intToChar(key, buffer + k);
+//		buffer[k + 4] = pid;
+		intToChar(pid, buffer + k + 4);
+//		buffer[PageFile::PAGE_SIZE - 8]++;
+		charToInt(buffer + PageFile::PAGE_SIZE - 8, temp);
+		intToChar(temp + 1, buffer + PageFile::PAGE_SIZE - 8);
 
 		return 0;
 	}
@@ -337,43 +437,70 @@ RC BTNonLeafNode::insertAndSplit(int key, PageId pid, BTNonLeafNode& sibling,
 		return -1;
 	}
 
+	int a, b;
+	charToInt(buffer + 42 * 8, a);
+	charToInt(buffer + 41 * 8, b);
+	int temp;
+
 	// key to insert is the midKey
-	if (key <= buffer[42 * 8] && key >= buffer[41 * 8]) {
+	if (key <= a && key >= b) {
 		midKey = key;
-		sibling.buffer[PageFile::PAGE_SIZE - 4] = pid;
+//		sibling.buffer[PageFile::PAGE_SIZE - 4] = pid;
+		intToChar(pid, sibling.buffer + PageFile::PAGE_SIZE - 4);
+
 
 	    for (int i = 0; i < 42 * 8; i += 4)
 	    {
-	        sibling.buffer[i] = (int) buffer[i + 42 * 8];
+	    	charToInt(buffer + i + 42 * 8, temp);
+	    	intToChar(temp, sibling.buffer + i);
+//	        sibling.buffer[i] = (int) buffer[i + 42 * 8];
 	    }
 
-	    buffer[PageFile::PAGE_SIZE - 8] = 42;
-	    sibling.buffer[PageFile::PAGE_SIZE - 8] = 42;
+//	    buffer[PageFile::PAGE_SIZE - 8] = 42;
+//	    sibling.buffer[PageFile::PAGE_SIZE - 8] = 42;
+	    intToChar(42, buffer + PageFile::PAGE_SIZE - 8);
+	    intToChar(42, buffer + PageFile::PAGE_SIZE - 8);
 	} 
-	else if (key > buffer[42 * 8]) {
-		midKey = (int) buffer[42 * 8];
-		sibling.buffer[PageFile::PAGE_SIZE - 4] = (int) buffer[42 * 8 + 4];
+	else if (key > a) {
+//		midKey = (int) buffer[42 * 8];
+		midKey = a;
+
+		charToInt(buffer + 42 * 8 + 4, temp);
+		intToChar(temp, sibling.buffer + PageFile::PAGE_SIZE - 4);
+//		sibling.buffer[PageFile::PAGE_SIZE - 4] = (int) buffer[42 * 8 + 4];
 
 	    for (int i = 0; i < 41 * 8; i += 4)
 	    {
-	        sibling.buffer[i] = (int) buffer[i + 43 * 8];
+//	        sibling.buffer[i] = (int) buffer[i + 43 * 8];
+			charToInt(buffer + i + 43 * 8, temp);
+	    	intToChar(temp, sibling.buffer + i);
 	    }
 
-	    buffer[PageFile::PAGE_SIZE - 8] = 42;
-	    sibling.buffer[PageFile::PAGE_SIZE - 8] = 41;
+//	    buffer[PageFile::PAGE_SIZE - 8] = 42;
+	    intToChar(42, buffer + PageFile::PAGE_SIZE - 8);
+//	    sibling.buffer[PageFile::PAGE_SIZE - 8] = 41;
+	    intToChar(41, sibling.buffer + PageFile::PAGE_SIZE - 8);
 	    sibling.insert(key, pid);
 	}
 	else {
-		midKey = (int) buffer[41 * 8];
-		sibling.buffer[PageFile::PAGE_SIZE - 4] = (int) buffer[41 * 8 + 4];
+//		midKey = (int) buffer[41 * 8];
+		midKey = b;
+//		sibling.buffer[PageFile::PAGE_SIZE - 4] = (int) buffer[41 * 8 + 4];
+
+		charToInt(buffer + 41 * 8 + 4, temp);
+		intToChar(temp, sibling.buffer + PageFile::PAGE_SIZE - 4);
 
 	    for (int i = 0; i < 42 * 8; i += 4)
 	    {
-	        sibling.buffer[i] = (int) buffer[i + 42 * 8];
+//	        sibling.buffer[i] = (int) buffer[i + 42 * 8];
+			charToInt(buffer + i + 42 * 8, temp);
+			intToChar(temp, sibling.buffer + i);
 	    }
 
-	    buffer[PageFile::PAGE_SIZE - 8] = 41;
-	    sibling.buffer[PageFile::PAGE_SIZE - 8] = 42;
+//	    buffer[PageFile::PAGE_SIZE - 8] = 41;
+//	    sibling.buffer[PageFile::PAGE_SIZE - 8] = 42;
+	    intToChar(41, buffer + PageFile::PAGE_SIZE - 8);
+	    intToChar(42, sibling.buffer + PageFile::PAGE_SIZE - 8);
 	    insert(key, pid);
 	}
 
@@ -389,22 +516,33 @@ RC BTNonLeafNode::insertAndSplit(int key, PageId pid, BTNonLeafNode& sibling,
  */
 RC BTNonLeafNode::locateChildPtr(int searchKey, PageId& pid)
 { 
-	if (searchKey < buffer[0]) {
-		pid = (int) buffer[PageFile::PAGE_SIZE - 4];
+	int key;
+	charToInt(buffer, key);
+	if (searchKey < key) {
+//		pid = (int) buffer[PageFile::PAGE_SIZE - 4];
+		charToInt(buffer + PageFile::PAGE_SIZE - 4, pid);
 		return 0;
 	}
 
-	int limit = (int) buffer[PageFile::PAGE_SIZE - 8] - 1;
+//	int limit = (int) buffer[PageFile::PAGE_SIZE - 8] - 1;
+	int limit;
+	charToInt(buffer + PageFile::PAGE_SIZE - 8, limit);
+	limit--;
+
 	for (int i = 0; i < limit; i++)
 	{
-		if (buffer[i * 8] == searchKey ||
-			(buffer[i * 8] < searchKey && buffer[i * 8 + 8] > searchKey)) {
-			pid = (int) buffer[i * 8 + 4];
+		int x, y;
+		charToInt(buffer + i * 8, x);
+		charToInt(buffer + i * 8 + 8, y);
+		if (x == searchKey || (x < searchKey && y > searchKey)) {
+//			pid = (int) buffer[i * 8 + 4];
+			charToInt(buffer + i * 8 + 4, pid);
 			return 0;
 		}
 	}
 
-	pid = (int) buffer[limit * 8 + 4];
+//	pid = (int) buffer[limit * 8 + 4];
+	charToInt(buffer + limit * 8 + 4, pid);
 	return 0;
 }
 
@@ -417,9 +555,13 @@ RC BTNonLeafNode::locateChildPtr(int searchKey, PageId& pid)
  */
 RC BTNonLeafNode::initializeRoot(PageId pid1, int key, PageId pid2)
 { 
-	buffer[0] = key;
-	buffer[4] = pid2;
-	buffer[PageFile::PAGE_SIZE - 4] = pid1;
-	buffer[PageFile::PAGE_SIZE - 8] = 1;
+//	buffer[0] = key;
+	intToChar(key, buffer);
+//	buffer[4] = pid2;
+	intToChar(pid2, buffer + 4);
+//	buffer[PageFile::PAGE_SIZE - 4] = pid1;
+	intToChar(pid1, buffer + PageFile::PAGE_SIZE - 4);
+//	buffer[PageFile::PAGE_SIZE - 8] = 1;
+	intToChar(1, buffer + PageFile::PAGE_SIZE - 8);
 	return 0; 
 }

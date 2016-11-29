@@ -14,29 +14,11 @@
 // Testing
 #include "BTreeIndex.h"
 #include "BTreeNode.h"
+#include <cstdlib>
 
 int main()
 {
-	/*
-	int key;
-	RecordId rid;
-		
-	BTLeafNode node;
-
-	for (int k = 300; k < 384; k++)
-	{
-		key = k;
-		rid.pid = k;
-		rid.sid = k;
-		node.insert(key, rid);
-	}
-
-	for (int k = 0; k < 84; k++)
-	{
-		node.readEntry(k, key, rid);
-		printf("Entry %i: %i %i %i\n", k, key, rid.pid, rid.sid);
-	}
-	*/
+	
 	/*RC rc;
 	if ((rc = SqlEngine::load("small", "small.del", true)) < 0) {
 		printf("Load: %i\n", rc);
@@ -71,13 +53,13 @@ int main()
 		printf("entry: %i %i %i\n", key, rid.pid, rid.sid);
 	}
 	*/
-
+/*
 
 	BTreeIndex btree;
 	RecordId rid;
 	RC rc;
 	if ((rc = btree.open("pagefile.txt", 'w')) != 0) return rc;
-
+*/
 	/*
 	rid.pid = 5;
 	rid.sid = 5;
@@ -102,11 +84,11 @@ int main()
 	printf("%i %i %i \n", key2, rid2.pid, rid2.sid);
 	*/
 
-
-	for (int i = 0; i <= 100; i++) {
+/*
+	for (int i = 200; i <= 300; i++) {
 		rid.pid = i;
 		rid.sid = i;
-		if ((rc = btree.insert(i, rid)) != 0) {
+		if ((rc = btree.insert(rand() % 5000, rid)) != 0) {
 			printf("insert %i\n", rc);
 		}
 	}
@@ -115,7 +97,17 @@ int main()
 	BTLeafNode node;
 	RecordId rid2;
 	int key2;
+	int k = 0;
+	btree.locate(0, cursor);
+	rc = 0;
+	while( rc == 0) {
+		//node.readEntry(k, key2, rid2);
+		rc = btree.readForward(cursor, key2, rid2);
+		printf("Entry %i: %i %i %i\n", k, key2, rid2.pid, rid2.sid);
+		k++;
+	}
 
+*/
 	/*
 	for (int i = 0; i <= 84; i++) {
 		if ((rc = btree.locate(i, cursor)) != 0) {
@@ -131,7 +123,7 @@ int main()
 	}
 	*/
 
-	if ((rc = btree.close()) != 0) return rc;	
+//	if ((rc = btree.close()) != 0) return rc;	
 
 /*
 	BTLeafNode a;
@@ -299,7 +291,7 @@ int main()
 	*/
 	// Testing
   // run the SQL engine taking user commands from standard input (console).
-  //SqlEngine::run(stdin);
+  SqlEngine::run(stdin);
 
 
   return 0;

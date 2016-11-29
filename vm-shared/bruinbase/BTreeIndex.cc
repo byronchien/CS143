@@ -9,7 +9,7 @@
  
 #include "BTreeIndex.h"
 #include "BTreeNode.h"
-
+#include <string>
 #include <cstdio>
 
 using namespace std;
@@ -334,7 +334,7 @@ RC BTreeIndex::readForward(IndexCursor& cursor, int& key, RecordId& rid)
 	if ((rc = node.read(cursor.pid, pf)) < 0) return rc;
 	if ((rc = node.readEntry(cursor.eid, key, rid)) < 0) return rc;
 
-	if (cursor.eid != 84) {
+	if (cursor.eid != node.getKeyCount()) {
 		cursor.eid++;
 	} else {
 		if (node.getNextNodePtr() != -1) {
