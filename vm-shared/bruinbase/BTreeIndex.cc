@@ -161,16 +161,16 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight,
 			if ((rc = leafnode.write(insertPid, pf)) != 0) return rc;
 
 			/*
-			if (key == 19901234) {
+			if (key == 43 || key == 100) {
 		 		printf("inserted key pid sid: %i %i %i\n", key, rid.pid, rid.sid);
-		 		printf("insertPid: %i\n", insertPid);
+		 		printf("getKeyCount: %i\n", leafnode.getKeyCount());
 		 		int key2;
 		 		RecordId rid2;
 		 		for (int i = 0; i < leafnode.getKeyCount(); i++) {
 		 			leafnode.readEntry(i, key2, rid2);
 		 			printf("%i %i %i %i \n", i, key2, rid2.pid, rid2.sid);
 		 		}			
-			}
+			}			
 			*/
 
 			return 0;
@@ -202,7 +202,7 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight,
 				
 				// initialize first root
 				if (treeHeight == 1) {
-					printf("%i %i\n", midKey, siblingPid);
+					//printf("%i %i\n", midKey, siblingPid);
 					BTNonLeafNode newroot;
 					rc = newroot.initializeRoot(insertPid, midKey, siblingPid);
 					rootPid = pf.endPid();

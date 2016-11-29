@@ -20,7 +20,7 @@ int main()
 {
 	/*
 	RC rc;
-	if ((rc = SqlEngine::load("xlarge", "xlarge.del", true)) < 0) {
+	if ((rc = SqlEngine::load("medium", "medium.del", true)) < 0) {
 		printf("Load: %i\n", rc);
 	}
 	*/
@@ -29,7 +29,7 @@ int main()
 	if ((rc = SqlEngine::select(3, "small", conditions)) < 0) {
 		printf("Select: %i\n", rc);
 	}	
-	*/
+	
 
 
 	/*
@@ -96,14 +96,15 @@ int main()
 	}
 	*/
 	/*
-	for (int i = 0; i <= 84; i++) {
+	for (int i = 1; i <= 100; i++) {
 		rid.pid = i;
 		rid.sid = i;
 		if ((rc = btree.insert(i, rid)) != 0) {
 			printf("insert %i\n", rc);
 		}
 	}
-	
+	*/
+	/*
 	IndexCursor cursor;
 	BTLeafNode node;
 	RecordId rid2;
@@ -113,7 +114,8 @@ int main()
 	rc = 0;
 	while( rc == 0) {
 		//node.readEntry(k, key2, rid2);
-		if ((rc = btree.readForward(cursor, key2, rid2)) == 0) {
+		rc = btree.readForward(cursor, key2, rid2);
+		if (rc == 0 || rc == RC_END_OF_TREE) {
 			printf("Entry %i: %i %i %i\n", k, key2, rid2.pid, rid2.sid);
 		}
 		k++;

@@ -229,8 +229,10 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
     int limit_key;
     RecordId limit_rid;
     index.readForward(limit_cursor, limit_key, limit_rid);
-    //printf("%i %i %i %i %i\n", limit_cursor.eid, limit_cursor.pid, limit_key, 
-    //        limit_rid.pid, limit_rid.sid);
+    /*
+    printf("%i %i %i %i %i\n", limit_cursor.eid, limit_cursor.pid, limit_key, 
+            limit_rid.pid, limit_rid.sid);
+            */
 
     if (equal_check) {
       index.locate(equal_num, cursor);
@@ -239,10 +241,12 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
       index.locate(equal_num + 1, limit_cursor);
       index.readForward(limit_cursor, limit_key, limit_rid);
     }
+    /*
+    printf("%i %i %i %i %i\n", limit_cursor.eid, limit_cursor.pid, limit_key, 
+            limit_rid.pid, limit_rid.sid);
+            */
 
-
-
-    while(key != limit_key)
+    while(key <= limit_key)
     {
       // read the tuple
       if ((rc = rf.read(rid, key, value)) < 0) {
@@ -304,9 +308,11 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
 
       // move to the next tuple
       next_tuple2:
+      
       if (readForwardrc == RC_END_OF_TREE) {
         break;
       }
+      
       readForwardrc = index.readForward(cursor, key, rid);
       
     }
