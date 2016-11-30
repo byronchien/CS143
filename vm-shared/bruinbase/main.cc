@@ -18,7 +18,26 @@
 
 int main()
 {
-	
+
+/*
+	BTNonLeafNode node;
+
+	node.insert(60, 1);
+	node.insert(100,2);
+	node.insert(80, 3);
+	node.insert(40, 4);
+
+
+	int pid;
+
+	for (int k =0 ;k < 10; k++)
+	{
+		node.locateChildPtr(k * 20, pid);
+		printf("pid: %i\n", pid);
+	}
+
+*/
+	/*
 	RC rc;
 
 	BTreeIndex btree;
@@ -52,7 +71,7 @@ int main()
 	if ((rc = btree.close()) != 0) return rc;	
 	
 
-
+	*/
 	/*
 	if ((rc = SqlEngine::load("medium", "medium.del", true)) < 0) {
 		printf("Load: %i\n", rc);
@@ -317,7 +336,7 @@ int main()
 	*/
 	// Testing
   // run the SQL engine taking user commands from standard input (console).
-  //SqlEngine::run(stdin);
+  SqlEngine::run(stdin);
 
 
   return 0;

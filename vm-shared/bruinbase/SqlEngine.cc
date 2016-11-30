@@ -245,7 +245,9 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
     printf("%i %i %i %i %i\n", limit_cursor.eid, limit_cursor.pid, limit_key, 
             limit_rid.pid, limit_rid.sid);
             */
+    //printf("%i %i\n", key, limit_key);
 
+    readForwardrc = 0;
     while(key <= limit_key)
     {
       // read the tuple
@@ -253,6 +255,7 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
         fprintf(stderr, "Error: while reading a tuple from table %s\n", table.c_str());
         goto exit_select2;
       }
+
 
       // check the conditions on the tuple
       for (unsigned i = 0; i < value_cond.size(); i++) {
@@ -289,6 +292,7 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
         }
       }
 
+
       // the condition is met for the tuple. 
       // increase matching tuple counter
       count++;
@@ -310,12 +314,14 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
       next_tuple2:
       
       if (readForwardrc == RC_END_OF_TREE) {
+
         break;
       }
-      
+
       readForwardrc = index.readForward(cursor, key, rid);
       
     }
+
 
     // print matching tuple count if "select count(*)"
     if (attr == 4) {

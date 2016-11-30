@@ -390,10 +390,42 @@ RC BTNonLeafNode::insert(int key, PageId pid)
 	}
 	else {
 		int k = getKeyCount() * 8;
-		int limit;
-		charToInt(buffer + k - 8, limit);
+		int limit = getKeyCount();
+		//charToInt(buffer + k - 8, limit);
+
+		int index = 0;
+		for (int i = limit; i > 0; i--)
+		{
+			int test_key;
+			charToInt(buffer + (i - 1) * 8, test_key);
+			if (key < test_key) {
+				for (int j = 0; j < 8; j++)
+				{
+					buffer[i * 8 + j] = buffer[(i - 1) * 8 + j];
+				}
+			} else {
+				index = i;
+				break;
+			}
+		}
+
+		// insert new key and pid at index
+		intToChar(key, buffer + index * 8);
+		intToChar(pid, buffer + index * 8 + 4);
+
+		// if inserting new lowest key, redirect lowest pid
+		if (index == 0)
+		{
+			intToChar(pid, buffer + PageFile::PAGE_SIZE - 4);
+		}
 
 		int temp;
+		// modify key count
+		charToInt(buffer + PageFile::PAGE_SIZE - 8, temp);
+		intToChar(temp + 1, buffer + PageFile::PAGE_SIZE - 8);
+
+
+		/*
 		for (int i = k; i != 0 && limit > key; i -= 8)
 		{
 			k = i-8;
@@ -414,7 +446,7 @@ RC BTNonLeafNode::insert(int key, PageId pid)
 //		buffer[PageFile::PAGE_SIZE - 8]++;
 		charToInt(buffer + PageFile::PAGE_SIZE - 8, temp);
 		intToChar(temp + 1, buffer + PageFile::PAGE_SIZE - 8);
-
+*/
 		return 0;
 	}
 }
@@ -515,20 +547,19 @@ RC BTNonLeafNode::insertAndSplit(int key, PageId pid, BTNonLeafNode& sibling,
  */
 RC BTNonLeafNode::locateChildPtr(int searchKey, PageId& pid)
 { 
+	/*
 	int temp;
 	for (int i = 0; i < getKeyCount(); i++) {
 		charToInt(buffer + i * 8, temp);
-		printf("key %i: %i\n", i, temp);
-	}
-
-
+//		printf("key %i: %i\n", i, temp);
+	} */
 
 	int key;
 	charToInt(buffer, key);
 	if (searchKey < key) {
 //		pid = (int) buffer[PageFile::PAGE_SIZE - 4];
 		charToInt(buffer + PageFile::PAGE_SIZE - 4, pid);
-		printf("searchKey < key %i %i\n", searchKey, key);
+//		printf("(searchKey) %i < (key) %i\n", searchKey, key);
 		return 0;
 	}
 
@@ -539,6 +570,22 @@ RC BTNonLeafNode::locateChildPtr(int searchKey, PageId& pid)
 	limit--;
 	*/
 
+	for (int i = 1; i < limit + 1; i++)
+	{
+		charToInt(buffer + i * 8, key);
+		if (searchKey < key)
+		{
+//			printf("(searchKey) %i < (key) %i\n", searchKey, key);
+			charToInt(buffer + i * 8 - 4, pid);
+			return 0;
+		}
+	}
+
+	// key is large than all keys in the node
+	charToInt(buffer + limit * 8 + 4, pid);
+	charToInt(buffer + limit * 8, key);
+//	printf("(searchKey) %i >= (key) %i\n", searchKey, key);
+/*
 	for (int i = 0; i < limit; i++)
 	{
 		int x, y;
@@ -547,14 +594,15 @@ RC BTNonLeafNode::locateChildPtr(int searchKey, PageId& pid)
 		if (x == searchKey || (x < searchKey && y > searchKey)) {
 //			pid = (int) buffer[i * 8 + 4];
 			charToInt(buffer + i * 8 + 4, pid);
-			printf("x < searchKey < y %i %i %i\n", x, searchKey, y);
+//			printf("x < searchKey < y %i %i %i\n", x, searchKey, y);
 			return 0;
 		}
 	}
 
 //	pid = (int) buffer[limit * 8 + 4];
 	charToInt(buffer + limit * 8 + 4, pid);
-	printf("searchKey > all %i\n", searchKey);
+//	printf("searchKey > all %i\n", searchKey);
+*/
 	return 0;
 }
 
