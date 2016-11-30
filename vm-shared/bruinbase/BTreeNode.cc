@@ -413,12 +413,6 @@ RC BTNonLeafNode::insert(int key, PageId pid)
 		intToChar(key, buffer + index * 8);
 		intToChar(pid, buffer + index * 8 + 4);
 
-		// if inserting new lowest key, redirect lowest pid
-		if (index == 0)
-		{
-			intToChar(pid, buffer + PageFile::PAGE_SIZE - 4);
-		}
-
 		int temp;
 		// modify key count
 		charToInt(buffer + PageFile::PAGE_SIZE - 8, temp);

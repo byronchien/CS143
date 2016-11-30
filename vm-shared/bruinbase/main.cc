@@ -37,7 +37,7 @@ int main()
 	}
 
 */
-	/*
+	
 	RC rc;
 
 	BTreeIndex btree;
@@ -71,7 +71,7 @@ int main()
 	if ((rc = btree.close()) != 0) return rc;	
 	
 
-	*/
+	
 	/*
 	if ((rc = SqlEngine::load("medium", "medium.del", true)) < 0) {
 		printf("Load: %i\n", rc);
@@ -336,7 +336,7 @@ int main()
 	*/
 	// Testing
   // run the SQL engine taking user commands from standard input (console).
-  SqlEngine::run(stdin);
+  //SqlEngine::run(stdin);
 
 
   return 0;
