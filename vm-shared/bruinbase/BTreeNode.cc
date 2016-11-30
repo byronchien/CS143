@@ -413,12 +413,6 @@ RC BTNonLeafNode::insert(int key, PageId pid)
 		intToChar(key, buffer + index * 8);
 		intToChar(pid, buffer + index * 8 + 4);
 
-		// if inserting new lowest key, redirect lowest pid
-		if (index == 0)
-		{
-			intToChar(pid, buffer + PageFile::PAGE_SIZE - 4);
-		}
-
 		int temp;
 		// modify key count
 		charToInt(buffer + PageFile::PAGE_SIZE - 8, temp);
@@ -468,6 +462,63 @@ RC BTNonLeafNode::insertAndSplit(int key, PageId pid, BTNonLeafNode& sibling,
 		return -1;
 	}
 
+	int key41, key42;
+	charToInt(buffer + 41 * 8, key41);
+	charToInt(buffer + 42 * 8, key42);
+	int pid2;
+
+	if (key < key41)
+	{
+		midKey = key41;
+
+		// copies all bytes from key 42 onwards
+		for (int k = 0; k < 42 * 8; k++)
+		{
+			sibling.buffer[k] = buffer[42 * 8 + k];
+		}
+
+		charToInt(buffer + 41 * 8 + 4, pid2);
+		intToChar(pid2, sibling.buffer + PageFile::PAGE_SIZE - 4);
+		intToChar(42, sibling.buffer + PageFile::PAGE_SIZE - 8);
+		intToChar(41, buffer + PageFile::PAGE_SIZE - 8);
+
+		insert(key, pid);
+	}
+	else if (key > key42)
+	{
+		midKey = key42;
+
+		// copies all bytes from key 43 onwards
+		for (int k = 0; k < 43 * 8; k++)
+		{
+			sibling.buffer[k] = buffer[43 * 8 + k];
+		}
+
+		charToInt(buffer + 42 * 8 + 4, pid2);
+		intToChar(pid2, sibling.buffer + PageFile::PAGE_SIZE - 4);
+		intToChar(41, sibling.buffer + PageFile::PAGE_SIZE - 8);
+		intToChar(42, buffer + PageFile::PAGE_SIZE - 8);
+
+		sibling.insert(key, pid);
+	}
+	else
+	{
+		midKey = key;
+
+		// copies all bytes from key 42 onwards
+		for (int k = 0; k < 43 * 8; k++)
+		{
+			sibling.buffer[k] = buffer[43 * 8 + k];
+		}
+
+		intToChar(pid, sibling.buffer + PageFile::PAGE_SIZE - 4);
+		intToChar(42, sibling.buffer + PageFile::PAGE_SIZE - 8);
+		intToChar(42, buffer + PageFile::PAGE_SIZE - 8);
+	}
+
+	return 0;
+
+/*
 	int a, b;
 	charToInt(buffer + 42 * 8, a);
 	charToInt(buffer + 41 * 8, b);
@@ -534,8 +585,8 @@ RC BTNonLeafNode::insertAndSplit(int key, PageId pid, BTNonLeafNode& sibling,
 	    intToChar(42, sibling.buffer + PageFile::PAGE_SIZE - 8);
 	    insert(key, pid);
 	}
-
-    return 0;
+*/
+//    return 0;
 }
 
 /*
@@ -581,7 +632,7 @@ RC BTNonLeafNode::locateChildPtr(int searchKey, PageId& pid)
 		}
 	}
 
-	// key is large than all keys in the node
+	// key is larger than all keys in the node
 	charToInt(buffer + limit * 8 + 4, pid);
 	charToInt(buffer + limit * 8, key);
 //	printf("(searchKey) %i >= (key) %i\n", searchKey, key);

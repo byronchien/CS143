@@ -234,20 +234,18 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
             limit_rid.pid, limit_rid.sid);
             */
 
+    readForwardrc = 0;
+
     if (equal_check) {
       index.locate(equal_num, cursor);
-      index.readForward(cursor, key, rid);
-
-      index.locate(equal_num + 1, limit_cursor);
-      index.readForward(limit_cursor, limit_key, limit_rid);
+      readForwardrc = index.readForward(cursor, key, rid);
+      limit_key = key;
     }
     /*
     printf("%i %i %i %i %i\n", limit_cursor.eid, limit_cursor.pid, limit_key, 
             limit_rid.pid, limit_rid.sid);
             */
-    //printf("%i %i\n", key, limit_key);
 
-    readForwardrc = 0;
     while(key <= limit_key)
     {
       // read the tuple
