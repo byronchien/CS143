@@ -219,12 +219,13 @@ RC BTreeIndex::insertRecursive(int key, const RecordId& rid, int currHeight,
 		// insert into non leaf node to point to new leaf node after split
 		int insertKey = midKey;
 		midKey = -1;
-		rc = node.insert(insertKey, midPid);
-
-		if (rc == 0) {	
+		
+		int keyCount = node.getKeyCount();
+		if (keyCount < 84 && keyCount >= 0) {	
+			if ((rc = node.insert(insertKey, midPid)) < 0) return rc;
 			return node.write(insertPid, pf);
 		}	
-		else if (rc == RC_NODE_FULL) {
+		else if (keyCount == 84) {
 			BTNonLeafNode sibling;
 			int siblingKey;
 			if (node.insertAndSplit(insertKey, midPid, sibling, siblingKey) == 0) {
